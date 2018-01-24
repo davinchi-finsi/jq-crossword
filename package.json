@@ -1,0 +1,32 @@
+{
+  "name": "jq-crossword",
+  "version": "0.0.1",
+  "description": "A jquery plugin to create corssword games",
+  "main": "dist/jquery.crossword.js",
+  "jsnext:main": "esm2015/index.js",
+  "ts:main": "src/jquery.crossword.ts",
+  "types": "src/jquery.crossword.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.com:davinchi/games/jq-crossword.git"
+  },
+  "homepage": "https://gitlab.com/davinchi/games/jq-crossword",
+  "author": "Davinchi",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jquery": "^3.3.0",
+    "@types/jqueryui": "^1.12.1",
+    "@types/node": "^9.3.0",
+    "extend": "^3.0.1",
+    "fuse-box": "^3.0.2",
+    "typescript": "^2.6.2",
+    "uglify-js": "^3.3.8"
+  },
+  "dependencies": {
+    "jquery": "^3.3.1",
+    "jquery-ui": "^1.12.1"
+  }
+}

@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "sourceMap": true,
+        "outDir": "dist",
+        "removeComments": true,
+        "moduleResolution": "node",
+        "experimentalDecorators": true,
+        "typeRoots": [
+            "../node_modules/@types"
+        ],
+        "lib": [
+            "es2015",
+            "dom"
+        ]
+    },
+    "exclude": [
+        "node_modules",
+        "jspm_packages"
+    ]
+}
