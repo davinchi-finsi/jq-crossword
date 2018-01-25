@@ -123,6 +123,14 @@ $.widget("ui.crossword",{
         this.element.on(`change.${this.NAMESPACE}`,"."+this.options.classes.field,{instance:this},this._onFieldChange);
         this.element.on(`keydown.${this.NAMESPACE}`,"."+this.options.classes.field,{instance:this},this._onFieldKey);
     },
+    /**
+     * Get the definition for a clue based on the position of the letter.
+     * If the cell has across and down definitions, returns the definition for which the cell is closest to the first letter
+     * If the cell has only one definition, returns that definition
+     * @param {} cell
+     * @returns {any}
+     * @private
+     */
     _getDefinitionForClosestToFirstLetter:function(cell:CrosswordCell){
         let result;
         //if there are two clues
@@ -138,6 +146,11 @@ $.widget("ui.crossword",{
         }
         return result;
     },
+    /**
+     * Invoked when a field recieves focus. Goes to the cell
+     * @param e
+     * @private
+     */
     _onFieldFocus:function(e){
         let instance = e.data.instance;
         if(!instance.disabled) {
@@ -145,47 +158,68 @@ $.widget("ui.crossword",{
                 $cell = $target.parents("." + instance.options.classes.cell).first();
             let x = $cell.data("x"),
                 y = $cell.data("y");
-            instance._activateCellAt(x,y);
+            instance._goToCell(y,x);
         }else{
             e.preventDefault();
         }
     },
-    _activateCellAt:function(x,y){
-        let cell:CrosswordCellRegistry = this.rowsRegistry[y].cellsRegistry[x],
+    /**
+     * Move the cursor to a cell. Also activates the related clue.
+     * If the cell has one clue, the focus will be to the active clue or to the clue related to the cell
+     * If the cell has two clues, the focus will be to the clue for which the cell is the first letter.
+     * If none of the cells are the first letter, the focus will go to the current clue, or, if there isn't a current
+     * clue, the focus will go to the clue for which the cell is closest to the first letter
+     * @param yOrCell   Could be a number or a CrosswordCellRegistry.
+     * @param x         The x position of the cell. Required if yOrCell is a number
+     * @private
+     */
+    _goToCell:function(yOrCell,x){
+        let cell:CrosswordCellRegistry = (typeof yOrCell).toLowerCase() == "number" ? this.rowsRegistry[yOrCell].cellsRegistry[x] : yOrCell,
             cellDefinition:CrosswordCell = cell.definition,
             definition;
-        //if cell has across and down
-        if(cellDefinition.acrossClue && cellDefinition.downClue){
-            //activate the clue for which the cell is the first letter
-            if(cellDefinition.acrossClueLetterIndex == 0){
-                definition = cellDefinition.acrossClue;
-            }else if(cellDefinition.downClueLetterIndex == 0){
-                definition = cellDefinition.downClue
-            }else{//if any of the cells are the first letter
-                //if the current definition is the same of the across or down, continue with the same definition
-                if(this.registryActive){
-                    if(this.registryActive.definition == cellDefinition.acrossClue){
-                        definition = cellDefinition.acrossClue;
-                    }else if (this.registryActive.definition == cellDefinition.downClue){
-                        definition = cellDefinition.downClue
-                    }
+        //if is not the active one
+        if(cell != this.cellsRegistry) {
+            //if cell has across and down clues
+            if (cellDefinition.acrossClue && cellDefinition.downClue) {
+                //activate the clue for which the cell is the first letter
+                if (cellDefinition.acrossClueLetterIndex == 0) {
+                    definition = cellDefinition.acrossClue;
+                } else if (cellDefinition.downClueLetterIndex == 0) {
+                    definition = cellDefinition.downClue
                 }
             }
+            //if the current definition is the same of the across or down, continue with the same definition
+            if (this.registryActive) {
+                this.registryCellActive.element.removeClass(this.options.classes.cellActive);
+                if (this.registryActive.definition == cellDefinition.acrossClue) {
+                    definition = cellDefinition.acrossClue;
+                } else if (this.registryActive.definition == cellDefinition.downClue) {
+                    definition = cellDefinition.downClue
+                } else {
+                    definition = this._getDefinitionForClosestToFirstLetter(cell.definition);
+                }
+            } else {
+                definition = this._getDefinitionForClosestToFirstLetter(cell.definition);
+            }
+            this.registryCellActive = cell;
+            cell.element.addClass(this.options.classes.cellActive);
+            this._activateClue(definition);
+            if(!cell.field.is(":focus")){
+                cell.field.trigger("focus");
+            }
         }
-        if(!definition){
-            definition = this._getDefinitionForClosestToFirstLetter(cell.definition);
-        }
-        if(this.registryCellActive){
-            this.registryCellActive.element.removeClass(this.options.classes.cellActive);
-        }
-        this.registryCellActive = cell;
-        cell.element.addClass(this.options.classes.cellActive);
-        this._activateClue(definition);
     },
     _onFieldChange:function(e){
         let instance = e.data.instance;
         if(!instance.disabled){
-            //if field is emt
+            //go to the next cell
+            if(!instance.registryCellActive){
+                let $target = $(this),
+                    $cell = $target.parents("." + instance.options.classes.cell).first();
+                let x = $cell.data("x"),
+                    y = $cell.data("y");
+                instance._goToCell(y,x);
+            }
         }else{
             e.preventDefault()
         }
@@ -243,79 +277,66 @@ $.widget("ui.crossword",{
         return result;
     },
     _goToNextWordFrom:function(cellRegistry:CrosswordCellRegistry){
-        let target:CrosswordClueDefinition = this._getNextOrPrevClueFrom(cellRegistry,true),
-            targetCell = target.cells[0];
+        let target:CrosswordClueDefinition = this._getNextOrPrevClueFrom(cellRegistry,true);
         this.cluesRegistry[target.code].fieldsElements[0].trigger("focus");
     },
     _goToPrevWordFrom:function(cellRegistry:CrosswordCellRegistry){
-        let target:CrosswordClueDefinition = this._getNextOrPrevClueFrom(cellRegistry,false),
-            targetCell = target.cells[0];
+        let target:CrosswordClueDefinition = this._getNextOrPrevClueFrom(cellRegistry,false);
         this.cluesRegistry[target.code].fieldsElements[0].trigger("focus");
     },
-    _getNextOrPrevCellFrom:function(cellRegistry:CrosswordCellRegistry,next:boolean){
-        let cellDefinition:CrosswordCell = cellRegistry.definition,
-            result,
-            across,
-            definition,
-            useClues,
-            alterClues,
-            index;
-
-        //si down
-            //y+1 x
-        //si up
-            //y-1 x
-        //si left
-            //y x+1
-        //si right
-            //y x-1
-        if(cellDefinition.acrossClue && cellDefinition.downClue){
-            let closestDefinition:CrosswordClueDefinition = this._getDefinitionForClosestToFirstLetter(cellRegistry.definition);
-            across = closestDefinition.across;
-            definition = closestDefinition;
-            //look for which one the letter is the first
-        }else{
-            //if in the cell there is only one clue
-            across = cellDefinition.acrossClue != undefined;
-            //get the clue from across or down
-            definition = across ? cellDefinition.acrossClue : cellDefinition.downClue;
-        }
-        useClues = across ? cellDefinition.crossword.acrossClues : cellDefinition.crossword.downClues;
-        alterClues = across ? cellDefinition.crossword.downClues : cellDefinition.crossword.acrossClues;
-        index = useClues.findIndex((cell)=>cell.number === definition.number);
-        if(index != -1){
-            index+= next ? 1 : -1;
-            let targetClue:CrosswordClueDefinition;
-            //check if the target index is valid
-            if((next && index < useClues.length) || (!next && index >= 0)){
-                targetClue = useClues[index];
-            }else{
-                //otherwise, if next, get the first element from the alter list
-                //if prev, get the last element from the alter list
-                targetClue = next ? alterClues[0] : alterClues.slice(-1)[0];
+    _getCellFor:function(cell:CrosswordCellRegistry,vertical:boolean,increase:boolean){
+        let result:CrosswordCellRegistry,
+            definition = cell.definition,
+            x= definition.x,
+            y= definition.y,
+            yTarget = vertical ? (increase ? y+1 : y-1): y,
+            xTarget = vertical ? x : (increase ? x+1 : x-1),
+            targetRow:CrosswordRowRegistry = this.rowsRegistry[yTarget];
+        //if row exists
+        if(targetRow){
+            let targetCell:CrosswordCellRegistry = targetRow.cellsRegistry[xTarget];
+            //check if is light
+            if(targetCell.definition.light){
+                //if is a hint, look for the next available
+                if(targetCell.definition.hint){
+                    result = this._getCellFor(targetCell,vertical,increase);
+                }else{
+                    result = targetCell;
+                }
             }
-            result = targetClue;
         }
         return result;
     },
     _goToCellAbove:function(){
-        if(this._activeCell){
-            let x = this._activeCell
+        if(this.registryCellActive){
+            let target:CrosswordCellRegistry = this._getCellFor(this.registryCellActive,true,false);
+            if(target){
+                this._goToCell(target);
+            }
         }
     },
     _goToCellBelow:function(){
-        if(this._activeCell){
-            let x = this._activeCell
+        if(this.registryCellActive){
+            let target:CrosswordCellRegistry = this._getCellFor(this.registryCellActive,true,true);
+            if(target){
+                this._goToCell(target);
+            }
         }
     },
     _goToCellRight:function(){
-        if(this._activeCell){
-            let x = this._activeCell
+        if(this.registryCellActive){
+            let target:CrosswordCellRegistry = this._getCellFor(this.registryCellActive,false,true);
+            if(target){
+                this._goToCell(target);
+            }
         }
     },
     _goToCellLeft:function(){
-        if(this._activeCell){
-            let x = this._activeCell
+        if(this.registryCellActive){
+            let target:CrosswordCellRegistry = this._getCellFor(this.registryCellActive,false,false);
+            if(target){
+                this._goToCell(target);
+            }
         }
     },
     _onFieldKey:function(e){
@@ -337,16 +358,16 @@ $.widget("ui.crossword",{
                     }
                     break;
                 case $.ui.keyCode.UP:
-
+                    instance._goToCellAbove();
                     break;
                 case $.ui.keyCode.RIGHT:
-
+                    instance._goToCellRight();
                     break;
                 case $.ui.keyCode.DOWN:
-
+                    instance._goToCellBelow();
                     break;
                 case $.ui.keyCode.LEFT:
-
+                    instance._goToCellLeft();
                     break;
                 case $.ui.keyCode.BACKSPACE:
 
