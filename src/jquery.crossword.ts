@@ -61,10 +61,29 @@ class CrosswordCellRegistry{
     rowRegistry:CrosswordRowRegistry;
     isCorrect?:boolean;
 }
+class CrosswordClueRegistry{
+    definition:CrosswordClueDefinition;
+    cellsElements:JQuery[]=[];
+    fieldsElements:JQuery[]=[];
+    isCorrect:boolean;
+    protected _$cells;
+    protected _$fields;
+    get cellsAsJquery(){
+        if(!this._$cells){
+            this._$cells = $($.map(this.cellsElements,(val)=>val.get(0)));
+        }
+        return this._$cells
+    }
+    getfieldsAsJquery(){
+        if(!this._$fields){
+            this._$fields = $($.map(this.fieldsElements,(val)=>val.get(0)));
+        }
+        return this._$fields
+    }
+}
 class CrosswordRowRegistry{
     element:JQuery;
     cellsRegistry:CrosswordCellRegistry[];
-    isCorrect?:boolean;
 }
 $.widget("ui.crossword",{
     NAMESPACE: "jq-crossword",
@@ -75,9 +94,13 @@ $.widget("ui.crossword",{
             row:"c-crossword__row",
             cell:"c-crossword__cell",
             clue:"c-crossword__clue",
+            clueActive:"c-crossword__clue--active",
             light:"c-crossword__clue--light",
             hint:"c-crossword__clue--hint",
-            field:"c-crossword__clue__field"
+            field:"c-crossword__clue__field",
+            firstLetter:"c-crossword__cell--first-letter",
+            firstLetterAcross:"c-crossword__cell--first-letter-across",
+            firstLetterDown:"c-crossword__cell--first-letter-down",
         }
     },
     /**
@@ -87,6 +110,7 @@ $.widget("ui.crossword",{
     _create: function () {
         this.element.addClass(this.options.classes.root);
         this._createDefinition();
+        this.cluesRegistry = this._createClueRegistry();
         this._createDOMForDefinition();
         this._addEvents();
         //use or create model
@@ -98,8 +122,36 @@ $.widget("ui.crossword",{
         this.element.on(`change.${this.NAMESPACE}`,"."+this.options.classes.field,{instance:this},this._onFieldChange);
         this.element.on(`keydown.${this.NAMESPACE}`,"."+this.options.classes.field,{instance:this},this._onFieldKey);
     },
+    _getClosestDefinitionToFirstLetterl:function(cell:CrosswordCell){
+        let result;
+        //if there are two clues
+        if(cell.acrossClue && cell.downClue){
+            //get the clue for which the cell is closest to the first letter
+            if(cell.acrossClueLetterIndex <= cell.downClueLetterIndex){
+                result = cell.acrossClue;
+            }else{
+                result = cell.downClue;
+            }
+        }else{
+            result = cell.acrossClue || cell.downClue;
+        }
+        return result;
+    },
     _onFieldFocus:function(e){
         let instance = e.data.instance;
+        if(!instance.disabled) {
+            let $target = $(this),
+                $cell = $target.parents("." + instance.options.classes.cell).first();
+            let x = $cell.data("x"),
+                y = $cell.data("y"),
+                cell:CrosswordCellRegistry = instance.rowsRegistry[y].cellsRegistry[x],
+                definition = instance._getClosestDefinitionToFirstLetterl(cell.definition);
+            if(definition) {
+                instance._activeClue(definition);
+            }
+        }else{
+            e.preventDefault();
+        }
     },
     _onFieldChange:function(e){
         let instance = e.data.instance;
@@ -107,6 +159,14 @@ $.widget("ui.crossword",{
             //if field is emt
         }else{
             e.preventDefault()
+        }
+    },
+    _activeClue:function(clue:CrosswordClueDefinition){
+        let registry:CrosswordClueRegistry = this.cluesRegistry[clue.code];
+        if(registry){
+            this.registryActive = registry;
+            this.element.find("."+this.options.classes.clueActive).removeClass(this.options.classes.clueActive);
+            registry.cellsAsJquery.addClass(this.options.classes.clueActive);
         }
     },
     /**
@@ -120,7 +180,8 @@ $.widget("ui.crossword",{
         let cellDefinition:CrosswordCell = cellRegistry.definition,
             result;
         if(cellDefinition.acrossClue && cellDefinition.downClue){
-
+            debugger;
+            //look for which one the letter is the first
         }else{
             //if in the cell there is only one clue
             let across = cellDefinition.acrossClue != undefined,
@@ -149,12 +210,12 @@ $.widget("ui.crossword",{
     _goToNextWordFrom:function(cellRegistry:CrosswordCellRegistry){
         let target:CrosswordClueDefinition = this._getNextOrPrevClueFrom(cellRegistry,true),
             targetCell = target.cells[0];
-        this.rowsRegistry[targetCell.y].cellsRegistry[targetCell.x].field.trigger("focus");
+        this.cluesRegistry[target.code].fieldsElements[0].trigger("focus");
     },
     _goToPrevWordFrom:function(cellRegistry:CrosswordCellRegistry){
         let target:CrosswordClueDefinition = this._getNextOrPrevClueFrom(cellRegistry,false),
             targetCell = target.cells[0];
-        this.rowsRegistry[targetCell.y].cellsRegistry[targetCell.x].field.trigger("focus");
+        this.cluesRegistry[target.code].fieldsElements[0].trigger("focus");
     },
     _onFieldKey:function(e){
         let instance = e.data.instance;
@@ -287,7 +348,7 @@ $.widget("ui.crossword",{
         if((typeof this.options.createCellField).toLowerCase() == "function"){
             result = this.options.createCellField.apply(this,arguments);
         }else{
-            result = $(`<input>`);
+            result = $(`<input maxlength="1" tabindex="-1">`);
         }
         return result;
     },
@@ -303,7 +364,20 @@ $.widget("ui.crossword",{
             "data-x":cellDefinition.x,
             "data-y":cellDefinition.y
         });
-        cell.addClass(this.options.classes.clue);
+        //has clue
+        if(cellDefinition.acrossClue || cellDefinition.downClue){
+            cell.addClass(this.options.classes.clue);
+        }
+        //is first letter
+        if(cellDefinition.clueLabel){
+            cell.addClass(this.options.classes.firstLetter);
+            if(cellDefinition.acrossClueLetterIndex == 0){
+                cell.addClass(this.options.classes.firstLetterAcross);
+            }
+            if(cellDefinition.downClueLetterIndex == 0){
+                cell.addClass(this.options.classes.firstLetterDown);
+            }
+        }
         //data for across
         if(cellDefinition.acrossClue){
             cell.addClass(this.options.classes.clue+"--"+cellDefinition.acrossClue.code);
@@ -314,6 +388,7 @@ $.widget("ui.crossword",{
             cell.addClass(this.options.classes.clue+"--"+cellDefinition.downClue.code);
             cell.attr("data-down",cellDefinition.downClue.number);
         }
+        //is light
         if(cellDefinition.light){
             cell.addClass(this.options.classes.light);
             if(cellDefinition.hint){
@@ -321,13 +396,26 @@ $.widget("ui.crossword",{
             }
         }
     },
+    _createClueRegistry:function(){
+        let crosswordClueRegistry:{[key:number]:CrosswordClueRegistry} = {},
+            definition:CrosswordDefinition = this.definition,
+            clues = definition.acrossClues.concat(definition.downClues);
+        for (let clueIndex = 0, cluesLength = clues.length; clueIndex < cluesLength; clueIndex++) {
+            let currentClue = clues[clueIndex],
+                registry = new CrosswordClueRegistry();
+            registry.definition = currentClue;
+            crosswordClueRegistry[currentClue.code]=registry;
+        }
+        return crosswordClueRegistry;
+    },
     _createDOMForDefinition:function(){
         if(this.definition){
             let definition:CrosswordDefinition = this.definition,
                 matrix:CrosswordCell[][] = definition.matrix,
                 board:JQuery = this._createBoard(),
                 rowsRegistry:CrosswordRowRegistry[] = [],
-                cellsMap = {};
+                cellsMap = {},
+                crosswordClueRegistry:{[key:string]:CrosswordClueRegistry} = this.cluesRegistry;
             //for each row of the matrix
             for (let rowIndex = 0, matrixLength = matrix.length; rowIndex < matrixLength; rowIndex++) {
                 let definitions = matrix[rowIndex],
@@ -362,6 +450,16 @@ $.widget("ui.crossword",{
                         }else{
                             cellElement.text(cellDefinition.answer);
                         }
+                    }
+                    if(cellDefinition.acrossClue){
+                        let registry = crosswordClueRegistry[cellDefinition.acrossClue.code];
+                        registry.cellsElements.push(cellElement);
+                        registry.fieldsElements.push(fieldElement);
+                    }
+                    if(cellDefinition.downClue){
+                        let registry = crosswordClueRegistry[cellDefinition.downClue.code];
+                        registry.cellsElements.push(cellElement);
+                        registry.fieldsElements.push(fieldElement);
                     }
                     cells.push(cellElement);
                     cellsRegistry[columnIndex] = cellRegistry;
