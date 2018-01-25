@@ -93,6 +93,7 @@ $.widget("ui.crossword",{
             board:"c-crossword__board",
             row:"c-crossword__row",
             cell:"c-crossword__cell",
+            cellActive:"c-crossword__cell--active",
             clue:"c-crossword__clue",
             clueActive:"c-crossword__clue--active",
             light:"c-crossword__clue--light",
@@ -122,7 +123,7 @@ $.widget("ui.crossword",{
         this.element.on(`change.${this.NAMESPACE}`,"."+this.options.classes.field,{instance:this},this._onFieldChange);
         this.element.on(`keydown.${this.NAMESPACE}`,"."+this.options.classes.field,{instance:this},this._onFieldKey);
     },
-    _getClosestDefinitionToFirstLetterl:function(cell:CrosswordCell){
+    _getDefinitionForClosestToFirstLetter:function(cell:CrosswordCell){
         let result;
         //if there are two clues
         if(cell.acrossClue && cell.downClue){
@@ -143,15 +144,43 @@ $.widget("ui.crossword",{
             let $target = $(this),
                 $cell = $target.parents("." + instance.options.classes.cell).first();
             let x = $cell.data("x"),
-                y = $cell.data("y"),
-                cell:CrosswordCellRegistry = instance.rowsRegistry[y].cellsRegistry[x],
-                definition = instance._getClosestDefinitionToFirstLetterl(cell.definition);
-            if(definition) {
-                instance._activeClue(definition);
-            }
+                y = $cell.data("y");
+            instance._activateCellAt(x,y);
         }else{
             e.preventDefault();
         }
+    },
+    _activateCellAt:function(x,y){
+        let cell:CrosswordCellRegistry = this.rowsRegistry[y].cellsRegistry[x],
+            cellDefinition:CrosswordCell = cell.definition,
+            definition;
+        //if cell has across and down
+        if(cellDefinition.acrossClue && cellDefinition.downClue){
+            //activate the clue for which the cell is the first letter
+            if(cellDefinition.acrossClueLetterIndex == 0){
+                definition = cellDefinition.acrossClue;
+            }else if(cellDefinition.downClueLetterIndex == 0){
+                definition = cellDefinition.downClue
+            }else{//if any of the cells are the first letter
+                //if the current definition is the same of the across or down, continue with the same definition
+                if(this.registryActive){
+                    if(this.registryActive.definition == cellDefinition.acrossClue){
+                        definition = cellDefinition.acrossClue;
+                    }else if (this.registryActive.definition == cellDefinition.downClue){
+                        definition = cellDefinition.downClue
+                    }
+                }
+            }
+        }
+        if(!definition){
+            definition = this._getDefinitionForClosestToFirstLetter(cell.definition);
+        }
+        if(this.registryCellActive){
+            this.registryCellActive.element.removeClass(this.options.classes.cellActive);
+        }
+        this.registryCellActive = cell;
+        cell.element.addClass(this.options.classes.cellActive);
+        this._activateClue(definition);
     },
     _onFieldChange:function(e){
         let instance = e.data.instance;
@@ -161,9 +190,9 @@ $.widget("ui.crossword",{
             e.preventDefault()
         }
     },
-    _activeClue:function(clue:CrosswordClueDefinition){
+    _activateClue:function(clue:CrosswordClueDefinition){
         let registry:CrosswordClueRegistry = this.cluesRegistry[clue.code];
-        if(registry){
+        if(registry && registry != this.registryActive){
             this.registryActive = registry;
             this.element.find("."+this.options.classes.clueActive).removeClass(this.options.classes.clueActive);
             registry.cellsAsJquery.addClass(this.options.classes.clueActive);
@@ -178,32 +207,38 @@ $.widget("ui.crossword",{
      */
     _getNextOrPrevClueFrom:function(cellRegistry:CrosswordCellRegistry,next:boolean){
         let cellDefinition:CrosswordCell = cellRegistry.definition,
-            result;
+            result,
+            across,
+            definition,
+            useClues,
+            alterClues,
+            index;
         if(cellDefinition.acrossClue && cellDefinition.downClue){
-            debugger;
+            let closestDefinition:CrosswordClueDefinition = this._getDefinitionForClosestToFirstLetter(cellRegistry.definition);
+            across = closestDefinition.across;
+            definition = closestDefinition;
             //look for which one the letter is the first
         }else{
             //if in the cell there is only one clue
-            let across = cellDefinition.acrossClue != undefined,
-                //get the clue from across or down
-                definition = across ? cellDefinition.acrossClue : cellDefinition.downClue,
-                useClues = across ? cellDefinition.crossword.acrossClues : cellDefinition.crossword.downClues,
-                alterClues = across ? cellDefinition.crossword.downClues : cellDefinition.crossword.acrossClues,
-                //get the clue index
-                index = useClues.findIndex((cell)=>cell.number === definition.number);
-            if(index != -1){
-                index+= next ? 1 : -1;
-                let targetClue:CrosswordClueDefinition;
-                //check if the target index is valid
-                if((next && index < useClues.length) || (!next && index >= 0)){
-                    targetClue = useClues[index];
-                }else{
-                    //otherwise, if next, get the first element from the alter list
-                    //if prev, get the last element from the alter list
-                    targetClue = next ? alterClues[0] : alterClues.slice(-1)[0];
-                }
-                result = targetClue;
+            across = cellDefinition.acrossClue != undefined;
+            //get the clue from across or down
+            definition = across ? cellDefinition.acrossClue : cellDefinition.downClue;
+        }
+        useClues = across ? cellDefinition.crossword.acrossClues : cellDefinition.crossword.downClues;
+        alterClues = across ? cellDefinition.crossword.downClues : cellDefinition.crossword.acrossClues;
+        index = useClues.findIndex((cell)=>cell.number === definition.number);
+        if(index != -1){
+            index+= next ? 1 : -1;
+            let targetClue:CrosswordClueDefinition;
+            //check if the target index is valid
+            if((next && index < useClues.length) || (!next && index >= 0)){
+                targetClue = useClues[index];
+            }else{
+                //otherwise, if next, get the first element from the alter list
+                //if prev, get the last element from the alter list
+                targetClue = next ? alterClues[0] : alterClues.slice(-1)[0];
             }
+            result = targetClue;
         }
         return result;
     },
@@ -216,6 +251,72 @@ $.widget("ui.crossword",{
         let target:CrosswordClueDefinition = this._getNextOrPrevClueFrom(cellRegistry,false),
             targetCell = target.cells[0];
         this.cluesRegistry[target.code].fieldsElements[0].trigger("focus");
+    },
+    _getNextOrPrevCellFrom:function(cellRegistry:CrosswordCellRegistry,next:boolean){
+        let cellDefinition:CrosswordCell = cellRegistry.definition,
+            result,
+            across,
+            definition,
+            useClues,
+            alterClues,
+            index;
+
+        //si down
+            //y+1 x
+        //si up
+            //y-1 x
+        //si left
+            //y x+1
+        //si right
+            //y x-1
+        if(cellDefinition.acrossClue && cellDefinition.downClue){
+            let closestDefinition:CrosswordClueDefinition = this._getDefinitionForClosestToFirstLetter(cellRegistry.definition);
+            across = closestDefinition.across;
+            definition = closestDefinition;
+            //look for which one the letter is the first
+        }else{
+            //if in the cell there is only one clue
+            across = cellDefinition.acrossClue != undefined;
+            //get the clue from across or down
+            definition = across ? cellDefinition.acrossClue : cellDefinition.downClue;
+        }
+        useClues = across ? cellDefinition.crossword.acrossClues : cellDefinition.crossword.downClues;
+        alterClues = across ? cellDefinition.crossword.downClues : cellDefinition.crossword.acrossClues;
+        index = useClues.findIndex((cell)=>cell.number === definition.number);
+        if(index != -1){
+            index+= next ? 1 : -1;
+            let targetClue:CrosswordClueDefinition;
+            //check if the target index is valid
+            if((next && index < useClues.length) || (!next && index >= 0)){
+                targetClue = useClues[index];
+            }else{
+                //otherwise, if next, get the first element from the alter list
+                //if prev, get the last element from the alter list
+                targetClue = next ? alterClues[0] : alterClues.slice(-1)[0];
+            }
+            result = targetClue;
+        }
+        return result;
+    },
+    _goToCellAbove:function(){
+        if(this._activeCell){
+            let x = this._activeCell
+        }
+    },
+    _goToCellBelow:function(){
+        if(this._activeCell){
+            let x = this._activeCell
+        }
+    },
+    _goToCellRight:function(){
+        if(this._activeCell){
+            let x = this._activeCell
+        }
+    },
+    _goToCellLeft:function(){
+        if(this._activeCell){
+            let x = this._activeCell
+        }
     },
     _onFieldKey:function(e){
         let instance = e.data.instance;
