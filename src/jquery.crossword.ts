@@ -3,11 +3,11 @@ import {CrosswordDefinition,CrosswordCell,CrosswordClueDefinition} from "crosswo
 /**
  * Parameters for the plugin
  */
-export interface JqCrosswordOptions{
+export interface JqCrosswordOptions {
     /**
      * Definition to use
      */
-    definition:CrosswordDefinition;
+    definition: CrosswordDefinition;
     /**
      * Css classes to use
      */
@@ -16,70 +16,178 @@ export interface JqCrosswordOptions{
          * Root element
          * @default "c-crossword"
          */
-        root?:string;
+        root?: string;
         /**
          * Class for the board
          * @default "c-crossword__board"
          */
-        board?:string;
+        board?: string;
         /**
          * Class for each row
          * @default "c-crossword__row"
          */
-        row?:string;
+        row?: string;
         /**
          * Class for each cell
          * @default "c-crossword__cell"
          */
-        cell?:string;
+        cell?: string;
         /**
          * Class for cells with clue
          * @default "c-crossword__clue"
          */
-        clue?:string;
+        clue?: string;
         /**
          * Class for cells with content or field
          * @default "c-crossword__clue--light"
          */
-        light?:string;
+        light?: string;
         /**
          * Class for cells that are hints
          * @default "c-crossword__clue--hint"
          */
-        hint?:string;
+        hint?: string;
         /**
          * Class for cells fields
          * @default "c-crossword__clue__field"
          */
-        field?:string;
+        field?: string;
         /**
          * Class for the list items
          */
-        listItem?:string;
-    }
+        listItem?: string;
+    },
+    /**
+     * Title ofr the down list
+     */
+    downListTitle?: string;
+    /**
+     * Title for the across list
+     */
+    acrossListTitle?: string;
+
+    /**
+     * Override the default creation of the board
+     * @returns {JQuery}
+     */
+    createBoard?(): JQuery;
+
+    /**
+     * Override the default creation of the row
+     * @param {number} rowIndex
+     * @returns {JQuery}
+     */
+    createRow?(rowIndex: number): JQuery;
+
+    /**
+     * Override the default creation of the cell
+     * @param {CrosswordCell} definition
+     * @returns {JQuery}
+     */
+    createCell?(definition: CrosswordCell): JQuery;
+
+    /**
+     * Override the default creation of the field of a cell
+     * @param {} definition
+     */
+    createCellField?(definition: CrosswordCell):JQuery;
+    /**
+     * Override the default creation of clues list
+     * @param {boolean} across
+     * @returns {JQuery}
+     */
+    createCluesListContainer?(across: boolean): JQuery;
+
+    /**
+     * Override the default creation of a list of clues
+     * @param {boolean} across
+     * @returns {JQuery}
+     */
+    createCluesList?(across: boolean):JQuery;
+
+    /**
+     * Override the default creation of a clues list item
+     * @param {CrosswordClueDefinition} definition
+     * @returns {JQuery}
+     */
+    createCluesListItem?(definition: CrosswordClueDefinition):JQuery;
+
 }
+/**
+ * Represents a cell
+ */
 class CrosswordCellRegistry{
+    /**
+     * Cell definition
+     */
     definition:CrosswordCell;
+    /**
+     * Cell field
+     */
     field:JQuery;
+    /**
+     * Cell element
+     */
     element:JQuery;
+    /**
+     * Row registry to which the cell belongs
+     */
     rowRegistry:CrosswordRowRegistry;
+    /**
+     * The user answer is correct
+     */
     isCorrect?:boolean;
 }
+
+/**
+ * Represents a clue
+ */
 class CrosswordClueRegistry{
+    /**
+     * Clue definition
+     */
     definition:CrosswordClueDefinition;
+    /**
+     * The jquery elements of the cells with letters of the clue. Is an js array not a Jquery object
+     * @type {any[]}
+     */
     cellsElements:JQuery[]=[];
+    /**
+     * The jquery elements of the fields for cells of the clue. Is an js array not a Jquery object
+     * @type {any[]}
+     */
     fieldsElements:JQuery[]=[];
+    /**
+     * Cell registries that belongs to the clue
+     * @type {any[]}
+     */
     cellsRegistries:CrosswordCellRegistry[]=[];
+    /**
+     * The user answer is correct
+     */
     isCorrect:boolean;
+    /**
+     * The jquery element with the clue in the list
+     */
     listItem:JQuery;
     protected _$cells;
     protected _$fields;
+
+    /**
+     * Get the cells as jquery element
+     * @returns {any}
+     */
     get cellsAsJquery(){
         if(!this._$cells){
             this._$cells = $($.map(this.cellsElements,(val)=>val.get(0)));
         }
         return this._$cells
     }
+
+    /**
+     * Get the fields as a jquery element
+     * @returns {any}
+     */
     getFieldsAsJquery(){
         if(!this._$fields){
             this._$fields = $($.map(this.fieldsElements,(val)=>val.get(0)));
@@ -87,8 +195,18 @@ class CrosswordClueRegistry{
         return this._$fields
     }
 }
+
+/**
+ * Represents a row of the board
+ */
 class CrosswordRowRegistry{
+    /**
+     * Row element
+     */
     element:JQuery;
+    /**
+     * Cells in the row
+     */
     cellsRegistry:CrosswordCellRegistry[];
 }
 $.widget("ui.crossword",{
@@ -120,7 +238,7 @@ $.widget("ui.crossword",{
      * @constructor
      * @private
      */
-    _create: function () {
+    _create() {
         this.element.addClass(this.options.classes.root);
         this._createDefinition();
         this.cluesRegistry = this._createClueRegistry();
@@ -131,14 +249,14 @@ $.widget("ui.crossword",{
         //create markup from model
         //assign events
     },
-    _addEvents:function(){
+    _addEvents(){
         this.element.on(`focus.${this.NAMESPACE}`,"."+this.options.classes.field,{instance:this},this._onFieldFocus);
         this.element.on(`blur.${this.NAMESPACE}`,"."+this.options.classes.field,{instance:this},this._onFieldBlur);
         this.element.on(`input.${this.NAMESPACE}`,"."+this.options.classes.field,{instance:this},this._onFieldChange);
         this.element.on(`keydown.${this.NAMESPACE}`,"."+this.options.classes.field,{instance:this},this._onFieldKey);
         this.element.on(`click.${this.NAMESPACE}`,"."+this.options.classes.listItem,{instance:this},this._onListItemClick);
     },
-    _onListItemClick:function(e){
+    _onListItemClick(e){
         let instance = e.data.instance;
         if(!instance.disabled) {
             instance.interaction = true;
@@ -165,7 +283,7 @@ $.widget("ui.crossword",{
      * @returns {any}
      * @private
      */
-    _getDefinitionForClosestToFirstLetter:function(cell:CrosswordCell){
+    _getDefinitionForClosestToFirstLetter(cell:CrosswordCell){
         let result;
         //if there are two clues
         if(cell.acrossClue && cell.downClue){
@@ -185,7 +303,7 @@ $.widget("ui.crossword",{
      * @param e
      * @private
      */
-    _onFieldFocus:function(e){
+    _onFieldFocus(e){
         let instance = e.data.instance;
         if(!instance.disabled) {
             instance.interaction = true;
@@ -204,7 +322,7 @@ $.widget("ui.crossword",{
      * @param e
      * @private
      */
-    _onFieldBlur:function(e){
+    _onFieldBlur(e){
         let instance = e.data.instance;
         if(!instance.interaction){
             instance._clearActivate();
@@ -220,7 +338,7 @@ $.widget("ui.crossword",{
      * @param x         The x position of the cell. Required if yOrCell is a number
      * @private
      */
-    _goToCell:function(yOrCell,x){
+    _goToCell(yOrCell,x){
         let cell:CrosswordCellRegistry = (typeof yOrCell).toLowerCase() == "number" ? this.rowsRegistry[yOrCell].cellsRegistry[x] : yOrCell,
             cellDefinition:CrosswordCell = cell.definition,
             definition;
@@ -261,7 +379,7 @@ $.widget("ui.crossword",{
      * @param e
      * @private
      */
-    _onFieldChange:function(e){
+    _onFieldChange(e){
         let instance = e.data.instance;
         if(!instance.disabled){
             instance.interaction = true;
@@ -287,7 +405,7 @@ $.widget("ui.crossword",{
             e.preventDefault()
         }
     },
-    _clearActivate:function(){
+    _clearActivate(){
         if(this.registryActive){
             this.registryActive = null;
             this.element.find("."+this.options.classes.clueActive).removeClass(this.options.classes.clueActive);
@@ -300,7 +418,7 @@ $.widget("ui.crossword",{
      * @param {CrosswordClueDefinition} clue    Registry of the clue to activate
      * @private
      */
-    _activateClue:function(clue:CrosswordClueDefinition){
+    _activateClue(clue:CrosswordClueDefinition){
         let registry:CrosswordClueRegistry = this.cluesRegistry[clue.code];
         if(registry && registry != this.registryActive){
             this.registryActive = registry;
@@ -316,7 +434,7 @@ $.widget("ui.crossword",{
      * @returns {any}
      * @private
      */
-    _getNextOrPrevClueFrom:function(cellRegistry:CrosswordCellRegistry,next:boolean){
+    _getNextOrPrevClueFrom(cellRegistry:CrosswordCellRegistry,next:boolean){
         let cellDefinition:CrosswordCell = cellRegistry.definition,
             result,
             across,
@@ -353,11 +471,11 @@ $.widget("ui.crossword",{
         }
         return result;
     },
-    _goToNextWordFrom:function(cellRegistry:CrosswordCellRegistry){
+    _goToNextWordFrom(cellRegistry:CrosswordCellRegistry){
         let target:CrosswordClueDefinition = this._getNextOrPrevClueFrom(cellRegistry,true);
         this.cluesRegistry[target.code].fieldsElements[0].trigger("focus");
     },
-    _goToPrevWordFrom:function(cellRegistry:CrosswordCellRegistry){
+    _goToPrevWordFrom(cellRegistry:CrosswordCellRegistry){
         let target:CrosswordClueDefinition = this._getNextOrPrevClueFrom(cellRegistry,false);
         this.cluesRegistry[target.code].fieldsElements[0].trigger("focus");
     },
@@ -370,7 +488,7 @@ $.widget("ui.crossword",{
      * @private
      * @example _getCellFor(someCell,true,false);//will look in vertical by decrease, the result is the cell above the registry passed to the function
      */
-    _getCellFor:function(cell:CrosswordCellRegistry,vertical:boolean,increase:boolean){
+    _getCellFor(cell:CrosswordCellRegistry,vertical:boolean,increase:boolean){
         let result:CrosswordCellRegistry,
             definition = cell.definition,
             x= definition.x,
@@ -393,7 +511,7 @@ $.widget("ui.crossword",{
         }
         return result;
     },
-    _goToCellAbove:function(){
+    _goToCellAbove(){
         if(this.registryCellActive){
             let target:CrosswordCellRegistry = this._getCellFor(this.registryCellActive,true,false);
             if(target){
@@ -401,7 +519,7 @@ $.widget("ui.crossword",{
             }
         }
     },
-    _goToCellBelow:function(){
+    _goToCellBelow(){
         if(this.registryCellActive){
             let target:CrosswordCellRegistry = this._getCellFor(this.registryCellActive,true,true);
             if(target){
@@ -409,7 +527,7 @@ $.widget("ui.crossword",{
             }
         }
     },
-    _goToCellRight:function(){
+    _goToCellRight(){
         if(this.registryCellActive){
             let target:CrosswordCellRegistry = this._getCellFor(this.registryCellActive,false,true);
             if(target){
@@ -417,7 +535,7 @@ $.widget("ui.crossword",{
             }
         }
     },
-    _goToCellLeft:function(){
+    _goToCellLeft(){
         if(this.registryCellActive){
             let target:CrosswordCellRegistry = this._getCellFor(this.registryCellActive,false,false);
             if(target){
@@ -425,7 +543,7 @@ $.widget("ui.crossword",{
             }
         }
     },
-    _onFieldKey:function(e){
+    _onFieldKey(e){
         let instance = e.data.instance;
         if(!instance.disabled){
             instance.interaction = true;
@@ -540,7 +658,7 @@ $.widget("ui.crossword",{
      * @returns {JQuery}
      * @private
      */
-    _createCellField:function(definition:CrosswordCell){
+    _createCellField(definition:CrosswordCell):JQuery{
         let result:JQuery;
         if((typeof this.options.createCellField).toLowerCase() == "function"){
             result = this.options.createCellField.apply(this,arguments);
@@ -549,7 +667,14 @@ $.widget("ui.crossword",{
         }
         return result;
     },
-    _createCluesListContainer:function(across:boolean){
+    /**
+     * Create the container of a list of clues.
+     * If the option "createCluesListContainer" is provided, will be used instead
+     * @param {boolean} across
+     * @returns {JQuery}
+     * @private
+     */
+    _createCluesListContainer(across:boolean):JQuery{
         let result:JQuery;
         if((typeof this.options.createCluesListContainer).toLowerCase() == "function"){
             result = this.options.createCluesListContainer.apply(this,arguments);
@@ -562,7 +687,14 @@ $.widget("ui.crossword",{
         }
         return result;
     },
-    _createCluesList:function(across:boolean){
+    /**
+     * Create a list of clues
+     * If the option "createCluesList" is provided, will be used instead
+     * @param {boolean} across
+     * @returns {JQuery}
+     * @private
+     */
+    _createCluesList(across:boolean):JQuery{
         let result:JQuery;
         if((typeof this.options.createCluesList).toLowerCase() == "function"){
             result = this.options.createCluesList.apply(this,arguments);
@@ -571,7 +703,14 @@ $.widget("ui.crossword",{
         }
         return result;
     },
-    _createCluesListItem:function(definition:CrosswordClueDefinition){
+    /**
+     * Create a clue list item.
+     * If the option "createCluesListContainer" is provided, will be used instead
+     * @param {CrosswordClueDefinition} definition  Definition
+     * @returns {JQuery}
+     * @private
+     */
+    _createCluesListItem(definition:CrosswordClueDefinition):JQuery{
         let result:JQuery;
         if((typeof this.options.createCluesListItem).toLowerCase() == "function"){
             result = this.options.createCluesListItem.apply(this,arguments);
@@ -580,7 +719,7 @@ $.widget("ui.crossword",{
         }
         return result;
     },
-    _createCluesLists:function(){
+    _createCluesLists():JQuery{
         let across = this.definition.acrossClues,
             down = this.definition.downClues;
         this.acrossCluesContainer = this._createCluesListContainer(true);
@@ -632,7 +771,7 @@ $.widget("ui.crossword",{
      * @param {CrosswordCell} clueDefinition
      * @private
      */
-    _addInfoToListElement:function(listItem:JQuery,clueDefinition:CrosswordCell){
+    _addInfoToListElement(listItem:JQuery,clueDefinition:CrosswordCell){
         listItem.addClass(this.options.classes.listItem);
         //data for across
         if(clueDefinition.across){
@@ -650,7 +789,7 @@ $.widget("ui.crossword",{
      * @param {CrosswordCell} cellDefinition
      * @private
      */
-    _addInfoToCellElement:function(cell:JQuery,cellDefinition:CrosswordCell){
+    _addInfoToCellElement(cell:JQuery,cellDefinition:CrosswordCell){
         //coordinates
         cell.attr({
             "data-x":cellDefinition.x,
@@ -688,7 +827,7 @@ $.widget("ui.crossword",{
             }
         }
     },
-    _createClueRegistry:function(){
+    _createClueRegistry(){
         let crosswordClueRegistry:{[key:number]:CrosswordClueRegistry} = {},
             definition:CrosswordDefinition = this.definition,
             clues = definition.acrossClues.concat(definition.downClues);
@@ -700,7 +839,7 @@ $.widget("ui.crossword",{
         }
         return crosswordClueRegistry;
     },
-    _createDOMForDefinition:function(){
+    _createDOMForDefinition(){
         if(this.definition){
             let definition:CrosswordDefinition = this.definition,
                 matrix:CrosswordCell[][] = definition.matrix,
@@ -774,7 +913,7 @@ $.widget("ui.crossword",{
             this.element.append(board);
         }
     },
-    _createDefinition:function(){
+    _createDefinition(){
         let definition = this.options.definition;
         if(definition){
             if(definition instanceof CrosswordDefinition !== true){
@@ -783,7 +922,7 @@ $.widget("ui.crossword",{
             this.definition = definition;
         }
     },
-    disable:function(){
+    disable(){
         this.element.addClass(this.options.classes.disabled);
         let rowsRegistry = this.rowsRegistry;
         for (let rowIndex = 0, rowsRegistryLength = rowsRegistry.length; rowIndex < rowsRegistryLength; rowIndex++) {
@@ -797,7 +936,7 @@ $.widget("ui.crossword",{
 
         }
     },
-    enable:function(){
+    enable(){
         this.element.removeClass(this.options.classes.disabled);
         let rowsRegistry = this.rowsRegistry;
         for (let rowIndex = 0, rowsRegistryLength = rowsRegistry.length; rowIndex < rowsRegistryLength; rowIndex++) {
