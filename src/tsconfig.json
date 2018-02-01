@@ -1,17 +1,22 @@
 {
     "compilerOptions": {
+        "module": "commonjs",
         "target": "es5",
         "sourceMap": true,
-        "outDir": "dist",
-        "removeComments": true,
         "moduleResolution": "node",
+        "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
         "typeRoots": [
             "../node_modules/@types"
         ],
-        "lib": [
+        "importHelpers": true,
+        "noEmitHelpers": true,
+        "lib":[
             "es2015",
-            "dom"
+            "dom",
+            "es5"
         ]
     },
     "exclude": [
