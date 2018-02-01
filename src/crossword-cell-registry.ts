@@ -4,6 +4,7 @@ import {
     CrosswordDefinition
 } from "crossword-definition";
 import {CrosswordRowRegistry} from "./crossword-row-registry";
+import {CrosswordClueRegistry} from "./crossword-clue-registry";
 
 /**
  * Represents a cell
@@ -26,7 +27,19 @@ export class CrosswordCellRegistry {
      */
     rowRegistry: CrosswordRowRegistry;
     /**
+     * Across clue registry to which the cell belongs
+     */
+    acrossClueRegistry: CrosswordClueRegistry;
+    /**
+     * Down clue registry to which the cell belongs
+     */
+    downClueRegistry: CrosswordClueRegistry;
+    /**
      * The user answer is correct
      */
     isCorrect?: boolean;
+    /**
+     * Value in the cell
+     */
+    currentAnswer?:string;
 }

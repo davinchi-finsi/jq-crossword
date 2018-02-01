@@ -36,6 +36,16 @@ export class CrosswordClueRegistry {
      * The jquery element with the clue in the list
      */
     listItem: JQuery;
+    /**
+     * Current answer
+     * @type {any[]}
+     */
+    currentAnswer:string[]=[];
+    /**
+     * All the letlers has been provided
+     * @type {boolean}
+     */
+    isCompleted:boolean = false;
     protected _$cells;
     protected _$fields;
 
@@ -54,7 +64,7 @@ export class CrosswordClueRegistry {
      * Get the fields as a jquery element
      * @returns {any}
      */
-    getFieldsAsJquery() {
+    get fieldsAsJquery() {
         if (!this._$fields) {
             this._$fields = $($.map(this.fieldsElements, (val) => val.get(0)));
         }

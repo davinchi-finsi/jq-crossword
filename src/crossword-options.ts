@@ -3,6 +3,17 @@ import {
     CrosswordClueDefinition,
     CrosswordDefinition
 } from "crossword-definition";
+
+/**
+ * Available feedback options
+ */
+export enum CrosswordFeedback{
+    /**
+     * Show feedback when all the letters of a clue has been provided
+     * @type {string}
+     */
+    clue="clue"
+}
 /**
  * Parameters for the plugin
  */
@@ -46,6 +57,16 @@ export interface CrosswordOptions {
          */
         cellActive?: string;
         /**
+         * Class for correct cells
+         * @default "c-crossword__cell--correct"
+         */
+        cellCorrect?:string;
+        /**
+         * Class for incorrect cells
+         * @default "c-crossword__cell--incorrect"
+         */
+        cellIncorrect?:string;
+        /**
          * Class for cells with clue
          * @default "c-crossword__clue"
          */
@@ -55,6 +76,16 @@ export interface CrosswordOptions {
          * @default "c-crossword__clue--active"
          */
         clueActive?: string;
+        /**
+         * Class for correct clue
+         * @default "c-crossword__clue--correct"
+         */
+        clueCorrect?:string;
+        /**
+         * Class for incorrect clue
+         * @default "c-crossword__clue--correct"
+         */
+        clueIncorrect?:string;
         /**
          * Class for cells with content or field
          * @default "c-crossword__clue--light"
@@ -120,7 +151,19 @@ export interface CrosswordOptions {
      * Title for the across list
      */
     acrossListTitle?: string;
-
+    /**
+     * Ingore case check in words
+     * @default true
+     */
+    ignoreCase?:boolean;
+    /**
+     * When to show the feedback.
+     * "cell" to show feedback on cell change
+     * "clue" to show feedback on clue completion (all letters)
+     * "end" to show feedback when all the words has been completed
+     * @default clue
+     */
+    feedback?:CrosswordFeedback;
     /**
      * Override the default creation of the board
      * @returns {JQuery}

@@ -56,6 +56,17 @@ interface JQuery {
      */
     crossword(methodName: 'goToPrevWord'): void;
 
+    /**
+     * Solve the game
+     */
+    crossword(methodName: 'solve'): void;
+
+    /**
+     * Check if a clue is correct
+     * @param {CrosswordClueRegistry} [clueRegistry]  Clue to check. If is not provided, the active cell will be checked
+     * @returns {boolean}
+     */
+    crossword(methodName: 'checkClue',clueRegistry): boolean;
     crossword(methodName: string): JQuery;
 
     crossword(options: CrosswordOptions): JQuery;
