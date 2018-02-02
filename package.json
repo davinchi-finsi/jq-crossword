@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "A jquery plugin to create corssword games",
   "main": "dist/jquery.crossword.js",
-  "jsnext:main": "esm2015/index.js",
+  "jsnext:main": "esm2015/jquery.crossword.js.js",
   "ts:main": "src/index.ts",
   "types": "src/index.ts",
   "typings": "src/index.ts",
@@ -30,6 +30,7 @@
   "dependencies": {
     "crossword-definition": "git+https://gitlab.com/davinchi/games/crossword-definition.git",
     "jquery": "^3.3.1",
-    "jquery-ui": "^1.12.1"
+    "jquery-ui": "^1.12.1",
+    "tslib": "^1.9.0"
   }
 }

@@ -43,9 +43,9 @@ Sparky.context(class {
     }
 });
 
-Sparky.task("clean", () => {
-    Sparky.src("dist").clean("dist").exec();
-    Sparky.src("esm2015").clean("esm2015").exec();
+Sparky.task("clean", async ()=> {
+    await Sparky.src("dist").clean("dist").exec();
+    await Sparky.src("esm2015").clean("esm2015").exec();
 });
 
 Sparky.task("default", ["clean"], context => {

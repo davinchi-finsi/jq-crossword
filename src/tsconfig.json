@@ -11,8 +11,6 @@
         "typeRoots": [
             "../node_modules/@types"
         ],
-        "importHelpers": true,
-        "noEmitHelpers": true,
         "lib":[
             "es2015",
             "dom",
