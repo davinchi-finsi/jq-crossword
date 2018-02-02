@@ -1,1 +1,813 @@
-!function(){var e={f:{},m:{},r:function(t){var s=e.m[t];if(s)return s.m.exports;var i=e.f[t];return i?((s=e.m[t]={}).exports={},s.m={exports:s.exports},i(s.m,s.exports),s.m.exports):void 0}};e.f[0]=function(t,s){function i(e){for(var t in e)s.hasOwnProperty(t)||(s[t]=e[t])}Object.defineProperty(s,"__esModule",{value:!0}),i(e.r(1)),i(e.r(2)),i(e.r(3)),i(e.r(4)),i(e.r(5)),i(e.r(6)),i(e.r(7))},e.f[1]=function(e,t){Object.defineProperty(t,"__esModule",{value:!0}),(t.CrosswordFeedback||(t.CrosswordFeedback={})).clue="clue"},e.f[2]=function(e,t){var s;Object.defineProperty(t,"__esModule",{value:!0}),(s=t.CrosswordEvents||(t.CrosswordEvents={})).onClueCompleted="crossword:clue",s.onSolved="crossword:solved"},e.f[3]=function(e,t){Object.defineProperty(t,"__esModule",{value:!0});var s=function(){return function(){}}();t.CrosswordCellRegistry=s},e.f[4]=function(e,t){Object.defineProperty(t,"__esModule",{value:!0});var s=function(){function e(){this.cellsElements=[],this.fieldsElements=[],this.cellsRegistries=[],this.currentAnswer=[],this.isCompleted=!1}return Object.defineProperty(e.prototype,"cellsAsJquery",{get:function(){return this._$cells||(this._$cells=$($.map(this.cellsElements,function(e){return e.get(0)}))),this._$cells},enumerable:!0,configurable:!0}),Object.defineProperty(e.prototype,"fieldsAsJquery",{get:function(){return this._$fields||(this._$fields=$($.map(this.fieldsElements,function(e){return e.get(0)}))),this._$fields},enumerable:!0,configurable:!0}),e}();t.CrosswordClueRegistry=s},e.f[5]=function(e,t){Object.defineProperty(t,"__esModule",{value:!0});var s=function(){return function(){}}();t.CrosswordRowRegistry=s},e.f[6]=function(t,s){Object.defineProperty(s,"__esModule",{value:!0});var i=e.r("crossword-definition"),o=e.r(1),r=e.r(4),n=e.r(3),l=e.r(5),c=e.r(2),a=function(){function e(){this.cluesRegistry={}}return e.prototype.disable=function(){this._super(),this.element.addClass(this.options.classes.disabled);var e=this.cluesRegistry;for(var t in e){e[t].fieldsAsJquery.prop("disabled",!0)}},e.prototype.enable=function(){this._super(),this.element.removeClass(this.options.classes.disabled);var e=this.cluesRegistry;for(var t in e){e[t].fieldsAsJquery.prop("disabled",!1)}},e.prototype.goToCell=function(e,t){var s,i,o;if("number"==(typeof e).toLowerCase()){var r=this.rowsRegistry[e];r&&(i=(s=r.cellsRegistry[t]).definition)}else i=(s=e).definition;return s&&i.light&&s!=this.registryCellActive&&(i.acrossClue&&i.downClue&&(0==i.acrossClueLetterIndex?o=i.acrossClue:0==i.downClueLetterIndex&&(o=i.downClue)),this.registryActive?(this.registryCellActive.element.removeClass(this.options.classes.cellActive),o=this.registryActive.definition==i.acrossClue?i.acrossClue:this.registryActive.definition==i.downClue?i.downClue:this._getDefinitionForClosestToFirstLetter(s.definition)):o=this._getDefinitionForClosestToFirstLetter(s.definition),this.registryCellActive=s,s.element.addClass(this.options.classes.cellActive),this._activateClue(o),s.field.is(":focus")||s.field.trigger("focus")),s},e.prototype.clearActive=function(){this.registryActive&&(this.registryActive=null,this.element.find("."+this.options.classes.clueActive).removeClass(this.options.classes.clueActive),this.registryCellActive.element.removeClass(this.options.classes.cellActive),this.registryCellActive=null)},e.prototype.goToCellAbove=function(){if(this.registryCellActive){var e=this._getCellFor(this.registryCellActive,!0,!1);e&&this.goToCell(e)}},e.prototype.goToCellBelow=function(){if(this.registryCellActive){var e=this._getCellFor(this.registryCellActive,!0,!0);e&&this.goToCell(e)}},e.prototype.goToCellRight=function(){if(this.registryCellActive){var e=this._getCellFor(this.registryCellActive,!1,!0);e&&this.goToCell(e)}},e.prototype.goToCellLeft=function(){if(this.registryCellActive){var e=this._getCellFor(this.registryCellActive,!1,!1);e&&this.goToCell(e)}},e.prototype.goToNextWord=function(){if(this.registryCellActive){var e=this._getNextOrPrevClueFrom(this.registryCellActive,!0);this.cluesRegistry[e.code].fieldsElements[0].trigger("focus")}},e.prototype.goToPrevWord=function(){if(this.registryCellActive){var e=this._getNextOrPrevClueFrom(this.registryCellActive,!1);this.cluesRegistry[e.code].fieldsElements[0].trigger("focus")}},e.prototype.checkClue=function(e){var t;if(e=e||this.registryActive){var s=e.isCompleted;if(e.isCompleted=e.currentAnswer.join("").length===e.definition.answer.length,e.isCompleted){for(var i=0,o=e.cellsRegistries,r=0,n=o;r<n.length;r++){var l=n[r];this._checkCellAnswer(l)&&i++}e.isCorrect=i==o.length,this.updateClueStateClass(e),t=e.isCorrect}else e.isCorrect=!1,this.updateClueStateClass(e);s!=e.isCompleted&&this.element.trigger(c.CrosswordEvents.onClueCompleted,[{instance:this,isCorrect:e.isCorrect,isCompleted:!1,definition:e.definition}])}return t},e.prototype.check=function(){var e=this.cluesRegistry,t=0;for(var s in e){if(!e[s].isCorrect)break;t++}t==Object.keys(e).length&&this.element.trigger(c.CrosswordEvents.onSolved,[this])},e.prototype.solve=function(){var e=this.cluesRegistry;for(var t in e)for(var s=0,i=e[t].cellsRegistries;s<i.length;s++){var o=i[s];o.field.val(o.definition.answer)}this.element.trigger(c.CrosswordEvents.onSolved,[this])},e.prototype._getCreateOptions=function(){return{namespace:"jq-crossword",classes:{root:"c-crossword",board:"c-crossword__board",row:"c-crossword__row",cell:"c-crossword__cell",cellActive:"c-crossword__cell--active",cellCorrect:"c-crossword__cell--correct",cellIncorrect:"c-crossword__cell--incorrect",clue:"c-crossword__clue",clueActive:"c-crossword__clue--active",clueCorrect:"c-crossword__clue--correct",clueIncorrect:"c-crossword__clue--incorrect",light:"c-crossword__clue--light",hint:"c-crossword__clue--hint",field:"c-crossword__clue__field",firstLetter:"c-crossword__cell--first-letter",firstLetterAcross:"c-crossword__cell--first-letter-across",firstLetterDown:"c-crossword__cell--first-letter-down",listItem:"c-crossword__list-item",cluesListContainer:"c-crossword__clues",cluesListTitle:"c-crossword__clues__title",clueList:"c-crossword__clues__list",disabled:"c-crossword--disabled"},downListTitle:"Down clues",acrossListTitle:"Across clues",ignoreCase:!0,feedback:o.CrosswordFeedback.clue}},e.prototype._checkCellAnswer=function(e){return e.field.val()&&(this.options.ignoreCase?e.isCorrect=new RegExp(e.definition.answer,"i").test(e.currentAnswer):e.isCorrect=e.currentAnswer==e.definition.answer),e.isCorrect},e.prototype._create=function(){this.element.addClass(this.options.classes.root),this._createDefinition(),this.cluesRegistry=this._createClueRegistry(),this._construct(),this._createCluesLists(),this._addEvents()},e.prototype._addEvents=function(){this.element.on("focus."+this.options.namespace,"."+this.options.classes.field,this._onFieldFocus.bind(this)),this.element.on("blur."+this.options.namespace,"."+this.options.classes.field,this._onFieldBlur.bind(this)),this.element.on("input."+this.options.namespace,"."+this.options.classes.field,this._onFieldChange.bind(this)),this.element.on("keydown."+this.options.namespace,"."+this.options.classes.field,this._onFieldKey.bind(this)),this.element.on("click."+this.options.namespace,"."+this.options.classes.listItem,this._onListItemClick.bind(this))},e.prototype.updateClueStateClass=function(e){if(e.isCompleted){var t=e.isCorrect?this.options.classes.clueCorrect:this.options.classes.clueIncorrect,s=e.isCorrect?this.options.classes.clueIncorrect:this.options.classes.clueCorrect;e.listItem.removeClass(s).addClass(t),e.cellsAsJquery.removeClass(s).addClass(t)}else{for(var i=0,o=e.cellsRegistries;i<o.length;i++){var r=o[i];r.acrossClueRegistry&&r.downClueRegistry&&(r.acrossClueRegistry.isCompleted||r.downClueRegistry.isCompleted)||r.element.removeClass([this.options.classes.clueCorrect,this.options.classes.clueIncorrect])}e.listItem.removeClass([this.options.classes.clueCorrect,this.options.classes.clueIncorrect])}},e.prototype._onListItemClick=function(e){if(this.options.disabled)e.preventDefault();else{this.interaction=!0;var t=$(e.target),s=t.data("down"),i=t.data("across"),o=void 0;o=s?this.cluesRegistry[s].cellsRegistries[0]:this.cluesRegistry[i].cellsRegistries[0],this.goToCell(o),this.interaction=!1}},e.prototype._getDefinitionForClosestToFirstLetter=function(e){return e.acrossClue&&e.downClue?e.acrossClueLetterIndex<=e.downClueLetterIndex?e.acrossClue:e.downClue:e.acrossClue||e.downClue},e.prototype._onFieldFocus=function(e){if(this.options.disabled)e.preventDefault();else{this.interaction=!0;var t=$(e.target).parents("."+this.options.classes.cell).first(),s=t.data("x"),i=t.data("y");this.goToCell(i,s),this.interaction=!1}},e.prototype._onFieldBlur=function(e){this.interaction||this.clearActive()},e.prototype._storeAndCheckAnswer=function(e,t){if(t.currentAnswer=e,t.definition.acrossClue){var s=this.cluesRegistry[t.definition.acrossClue.code],i=t.definition.acrossClueLetterIndex;s.currentAnswer[i]=e,this.options.feedback===o.CrosswordFeedback.clue&&this.checkClue(s)}if(t.definition.downClue){s=this.cluesRegistry[t.definition.downClue.code],i=t.definition.downClueLetterIndex;s.currentAnswer[i]=e,this.options.feedback===o.CrosswordFeedback.clue&&this.checkClue(s)}this.check()},e.prototype._onFieldChange=function(e){if(this.options.disabled)e.preventDefault();else{this.interaction=!0;var t=this.registryCellActive.field.val();if(!this.registryActive){var s=$(e.target).parents("."+this.options.classes.cell).first(),i=s.data("x"),o=s.data("y");this.goToCell(o,i)}this._storeAndCheckAnswer(t,this.registryCellActive),t?this.registryActive.definition.across?this.goToCellRight():this.goToCellBelow():this.registryActive.definition.across?this.goToCellLeft():this.goToCellAbove(),this.interaction=!1}},e.prototype._activateClue=function(e){var t=this.cluesRegistry[e.code];t&&t!=this.registryActive&&(this.registryActive=t,this.element.find("."+this.options.classes.clueActive).removeClass(this.options.classes.clueActive),t.cellsAsJquery.addClass(this.options.classes.clueActive),t.listItem.addClass(this.options.classes.clueActive))},e.prototype._getNextOrPrevClueFrom=function(e,t){var s,i,o,r,n,l,c=e.definition;if(c.acrossClue&&c.downClue){var a=this._getDefinitionForClosestToFirstLetter(e.definition);i=a.across,o=a}else i=void 0!=c.acrossClue,o=i?c.acrossClue:c.downClue;if(r=i?c.crossword.acrossClues:c.crossword.downClues,n=i?c.crossword.downClues:c.crossword.acrossClues,-1!=(l=r.findIndex(function(e){return e.number===o.number}))){l+=t?1:-1;s=t&&l<r.length||!t&&l>=0?r[l]:t?n[0]:n.slice(-1)[0]}return s},e.prototype._getCellFor=function(e,t,s){var i,o=e.definition,r=o.x,n=o.y,l=t?s?n+1:n-1:n,c=t?r:s?r+1:r-1,a=this.rowsRegistry[l];if(a){var d=a.cellsRegistry[c];d&&d.definition.light&&(i=d.definition.hint?this._getCellFor(d,t,s):d)}return i},e.prototype._onFieldKey=function(e){if(this.options.disabled)e.preventDefault();else{this.interaction=!0;var t=$(e.target).parents("."+this.options.classes.cell).first(),s=t.data("x"),i=t.data("y"),o=this.rowsRegistry[i].cellsRegistry[s];switch(e.which){case $.ui.keyCode.SPACE:e.preventDefault();break;case $.ui.keyCode.ENTER:case $.ui.keyCode.TAB:e.preventDefault(),e.shiftKey?this.goToPrevWord():this.goToNextWord();break;case $.ui.keyCode.UP:this.goToCellAbove();break;case $.ui.keyCode.RIGHT:this.goToCellRight();break;case $.ui.keyCode.DOWN:this.goToCellBelow();break;case $.ui.keyCode.LEFT:this.goToCellLeft();break;case $.ui.keyCode.BACKSPACE:e.preventDefault(),o.field.val("").trigger("input");break;default:1==e.key.length&&(e.preventDefault(),o.field.val(e.key).trigger("input"))}this.interaction=!1}},e.prototype._createBoard=function(){return"function"==(typeof this.options.createBoard).toLowerCase()?this.options.createBoard.apply(this,arguments):$('<table class="'+this.options.classes.board+'"></table>')},e.prototype._createRow=function(e){return"function"==(typeof this.options.createRow).toLowerCase()?this.options.createRow.apply(this,arguments):$('<tr class="'+this.options.classes.row+'" data-row="'+e+'"></tr>')},e.prototype._createCell=function(e){return"function"==(typeof this.options.createCell).toLowerCase()?this.options.createCell.apply(this,arguments):$('<td class="'+this.options.classes.cell+'"></td>')},e.prototype._createCellField=function(e){return"function"==(typeof this.options.createCellField).toLowerCase()?this.options.createCellField.apply(this,arguments):$('<input maxlength="1" tabindex="-1">')},e.prototype._createCluesListContainer=function(e){return"function"==(typeof this.options.createCluesListContainer).toLowerCase()?this.options.createCluesListContainer.apply(this,arguments):$('\n                <div class="'+this.options.classes.cluesListContainer+'">\n                    <p class="'+this.options.classes.cluesListTitle+'">'+(e?this.options.acrossListTitle:this.options.downListTitle)+"</p>\n                </div>\n            ")},e.prototype._createCluesList=function(e){return"function"==(typeof this.options.createCluesList).toLowerCase()?this.options.createCluesList.apply(this,arguments):$('<ul class="'+this.options.classes.clueList+'"></ul>')},e.prototype._createCluesListItem=function(e){return"function"==(typeof this.options.createCluesListItem).toLowerCase()?this.options.createCluesListItem.apply(this,arguments):$("<li></li>")},e.prototype._createDownCluesList=function(){var e=this.definition.downClues;this.downCluesContainer=this._createCluesListContainer(!1),this.downCluesList=this._createCluesList(!1);for(var t=0,s=e;t<s.length;t++){var i=s[t],o=this._createCluesListItem(i);this._addInfoToListElement(o,i),this.downCluesList.append(o),this.cluesRegistry[i.code].listItem=o}this.downCluesContainer&&this.downCluesContainer.append(this.downCluesList)},e.prototype._createAcrossCluesList=function(){var e=this.definition.acrossClues;this.acrossCluesContainer=this._createCluesListContainer(!0),this.acrossCluesList=this._createCluesList(!0);for(var t=0,s=e;t<s.length;t++){var i=s[t],o=this._createCluesListItem(i);this._addInfoToListElement(o,i),this.acrossCluesList.append(o),this.cluesRegistry[i.code].listItem=o}this.acrossCluesContainer&&this.acrossCluesContainer.append(this.acrossCluesList)},e.prototype._createCluesLists=function(){this._createAcrossCluesList(),this._createDownCluesList(),this.options.acrossListAppendTo?this.acrossCluesContainer?$(this.options.acrossListAppendTo).append(this.acrossCluesContainer):$(this.options.acrossListAppendTo).append(this.acrossCluesList):this.element.append(this.acrossCluesContainer),this.options.downListAppendTo?this.downCluesContainer?$(this.options.downListAppendTo).append(this.downCluesContainer):$(this.options.downListAppendTo).append(this.downCluesList):this.element.append(this.downCluesContainer)},e.prototype._addInfoToListElement=function(e,t){e.addClass(this.options.classes.listItem),t.across?(e.addClass(this.options.classes.clue+"--"+t.code),e.attr("data-across",t.code)):(e.addClass(this.options.classes.clue+"--"+t.code),e.attr("data-down",t.code)),e.text(t.clue)},e.prototype._addInfoToCellElement=function(e,t){e.attr({"data-x":t.x,"data-y":t.y}),(t.acrossClue||t.downClue)&&e.addClass(this.options.classes.clue),t.clueLabel&&(e.addClass(this.options.classes.firstLetter),0==t.acrossClueLetterIndex&&e.addClass(this.options.classes.firstLetterAcross),0==t.downClueLetterIndex&&e.addClass(this.options.classes.firstLetterDown)),t.acrossClue&&(e.addClass(this.options.classes.clue+"--"+t.acrossClue.code),e.attr("data-across",t.acrossClue.number)),t.downClue&&(e.addClass(this.options.classes.clue+"--"+t.downClue.code),e.attr("data-down",t.downClue.number)),t.light&&(e.addClass(this.options.classes.light),t.hint&&e.addClass(this.options.classes.hint))},e.prototype._createClueRegistry=function(){for(var e={},t=this.definition,s=t.acrossClues.concat(t.downClues),i=0,o=s.length;i<o;i++){var n=s[i],l=new r.CrosswordClueRegistry;l.definition=n,l.currentAnswer=new Array(n.answer.length),e[n.code]=l}return e},e.prototype._construct=function(){if(this.definition){for(var e=this.definition.matrix,t=this._createBoard(),s=[],i=this.cluesRegistry,o=0,r=e.length;o<r;o++){var c=e[o],a=void 0,d=[],u=[],h=new l.CrosswordRowRegistry;h.cellsRegistry=u;for(var C=0,p=c.length;C<p;C++){var f=c[C],g=this._createCell(f),y=new n.CrosswordCellRegistry,w=void 0;if(y.rowRegistry=h,this._addInfoToCellElement(g,f),y.definition=f,y.element=g,f.light)if(f.hint){if(g.text(f.answer),f.acrossClue)(v=i[f.acrossClue.code]).currentAnswer[f.acrossClueLetterIndex]=f.answer;if(f.downClue)(v=i[f.downClue.code]).currentAnswer[f.downClueLetterIndex]=f.answer}else{var v;if((w=this._createCellField(f)).addClass(this.options.classes.field),y.field=w,g.append(w),f.acrossClue)(v=i[f.acrossClue.code]).cellsElements.push(g),v.fieldsElements.push(w),v.cellsRegistries.push(y),y.acrossClueRegistry=v;if(f.downClue)(v=i[f.downClue.code]).cellsElements.push(g),v.fieldsElements.push(w),v.cellsRegistries.push(y),y.downClueRegistry=v}d.push(g),u[C]=y}(a=this._createRow(o))?(h.element=a,a.append(d),t.append(a)):t.append(d),s.push(h)}this.rowsRegistry=s,this.element.append(t)}},e.prototype._createDefinition=function(){var e=this.options.definition;e&&(e instanceof i.CrosswordDefinition!=!0&&(e=new i.CrosswordDefinition(e)),this.definition=e)},e}();s.CrosswordGame=a},e.f[7]=function(t,s){Object.defineProperty(s,"__esModule",{value:!0});var i=e.r(6);$.widget("ui.crossword",i.CrosswordGame.prototype)};var t=e.r(0);if(t)for(var s in t)window[s]=t[s]}();
+(function(){
+    var _ece7 = {};
+    _ece7.f = {}
+    // cached modules
+    _ece7.m = {};
+    _ece7.r = function(id) {
+        var cached = _ece7.m[id];
+        // resolve if in cache
+        if (cached) {
+            return cached.m.exports;
+        }
+        var file = _ece7.f[id];
+        if (!file)
+            return;
+        cached = _ece7.m[id] = {};
+        cached.exports = {};
+        cached.m = { exports: cached.exports };
+        file(cached.m, cached.exports);
+        return cached.m.exports;
+    };
+// default/index.js
+_ece7.f[0] = function(module,exports){
+function __export(m) {
+    for (var p in m)
+        if (!exports.hasOwnProperty(p))
+            exports[p] = m[p];
+}
+Object.defineProperty(exports, '__esModule', { value: true });
+__export(_ece7.r(1));
+__export(_ece7.r(2));
+__export(_ece7.r(3));
+__export(_ece7.r(4));
+__export(_ece7.r(5));
+__export(_ece7.r(6));
+__export(_ece7.r(7));
+}
+// default/crossword-options.js
+_ece7.f[1] = function(module,exports){
+Object.defineProperty(exports, '__esModule', { value: true });
+var CrosswordFeedback;
+(function (CrosswordFeedback) {
+    CrosswordFeedback['clue'] = 'clue';
+}(CrosswordFeedback = exports.CrosswordFeedback || (exports.CrosswordFeedback = {})));
+}
+// default/crossword-events.js
+_ece7.f[2] = function(module,exports){
+Object.defineProperty(exports, '__esModule', { value: true });
+var CrosswordEvents;
+(function (CrosswordEvents) {
+    CrosswordEvents['onClueCompleted'] = 'crossword:clue';
+    CrosswordEvents['onSolved'] = 'crossword:solved';
+}(CrosswordEvents = exports.CrosswordEvents || (exports.CrosswordEvents = {})));
+}
+// default/crossword-cell-registry.js
+_ece7.f[3] = function(module,exports){
+Object.defineProperty(exports, '__esModule', { value: true });
+var CrosswordCellRegistry = function () {
+    function CrosswordCellRegistry() {
+    }
+    return CrosswordCellRegistry;
+}();
+exports.CrosswordCellRegistry = CrosswordCellRegistry;
+}
+// default/crossword-clue-registry.js
+_ece7.f[4] = function(module,exports){
+Object.defineProperty(exports, '__esModule', { value: true });
+var CrosswordClueRegistry = function () {
+    function CrosswordClueRegistry() {
+        this.cellsElements = [];
+        this.fieldsElements = [];
+        this.cellsRegistries = [];
+        this.currentAnswer = [];
+        this.isCompleted = false;
+    }
+    Object.defineProperty(CrosswordClueRegistry.prototype, 'cellsAsJquery', {
+        get: function () {
+            if (!this._$cells) {
+                this._$cells = $($.map(this.cellsElements, function (val) {
+                    return val.get(0);
+                }));
+            }
+            return this._$cells;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CrosswordClueRegistry.prototype, 'fieldsAsJquery', {
+        get: function () {
+            if (!this._$fields) {
+                this._$fields = $($.map(this.fieldsElements, function (val) {
+                    return val.get(0);
+                }));
+            }
+            return this._$fields;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return CrosswordClueRegistry;
+}();
+exports.CrosswordClueRegistry = CrosswordClueRegistry;
+}
+// default/crossword-row-registry.js
+_ece7.f[5] = function(module,exports){
+Object.defineProperty(exports, '__esModule', { value: true });
+var CrosswordRowRegistry = function () {
+    function CrosswordRowRegistry() {
+    }
+    return CrosswordRowRegistry;
+}();
+exports.CrosswordRowRegistry = CrosswordRowRegistry;
+}
+// default/crossword-game.js
+_ece7.f[6] = function(module,exports){
+Object.defineProperty(exports, '__esModule', { value: true });
+var crossword_definition_1 = _ece7.r('crossword-definition');
+var crossword_options_1 = _ece7.r(1);
+var crossword_clue_registry_1 = _ece7.r(4);
+var crossword_cell_registry_1 = _ece7.r(3);
+var crossword_row_registry_1 = _ece7.r(5);
+var crossword_events_1 = _ece7.r(2);
+var CrosswordGame = function () {
+    function CrosswordGame() {
+        this.cluesRegistry = {};
+    }
+    CrosswordGame.prototype.disable = function () {
+        this._super();
+        this.element.addClass(this.options.classes.disabled);
+        var cluesRegistry = this.cluesRegistry;
+        for (var clueCode in cluesRegistry) {
+            var clueRegistry = cluesRegistry[clueCode];
+            clueRegistry.fieldsAsJquery.prop('disabled', true);
+        }
+    };
+    CrosswordGame.prototype.enable = function () {
+        this._super();
+        this.element.removeClass(this.options.classes.disabled);
+        var cluesRegistry = this.cluesRegistry;
+        for (var clueCode in cluesRegistry) {
+            var clueRegistry = cluesRegistry[clueCode];
+            clueRegistry.fieldsAsJquery.prop('disabled', false);
+        }
+    };
+    CrosswordGame.prototype.goToCell = function (yOrCell, x) {
+        var cell, cellDefinition, definition;
+        if ((typeof yOrCell).toLowerCase() == 'number') {
+            var rowRegistry = this.rowsRegistry[yOrCell];
+            if (rowRegistry) {
+                cell = rowRegistry.cellsRegistry[x];
+                cellDefinition = cell.definition;
+            }
+        } else {
+            cell = yOrCell;
+            cellDefinition = cell.definition;
+        }
+        if (cell && cellDefinition.light && cell != this.registryCellActive) {
+            if (cellDefinition.acrossClue && cellDefinition.downClue) {
+                if (cellDefinition.acrossClueLetterIndex == 0) {
+                    definition = cellDefinition.acrossClue;
+                } else if (cellDefinition.downClueLetterIndex == 0) {
+                    definition = cellDefinition.downClue;
+                }
+            }
+            if (this.registryActive) {
+                this.registryCellActive.element.removeClass(this.options.classes.cellActive);
+                if (this.registryActive.definition == cellDefinition.acrossClue) {
+                    definition = cellDefinition.acrossClue;
+                } else if (this.registryActive.definition == cellDefinition.downClue) {
+                    definition = cellDefinition.downClue;
+                } else {
+                    definition = this._getDefinitionForClosestToFirstLetter(cell.definition);
+                }
+            } else {
+                definition = this._getDefinitionForClosestToFirstLetter(cell.definition);
+            }
+            this.registryCellActive = cell;
+            cell.element.addClass(this.options.classes.cellActive);
+            this._activateClue(definition);
+            if (!cell.field.is(':focus')) {
+                cell.field.trigger('focus');
+            }
+        }
+        return cell;
+    };
+    CrosswordGame.prototype.clearActive = function () {
+        if (this.registryActive) {
+            this.registryActive = null;
+            this.element.find('.' + this.options.classes.clueActive).removeClass(this.options.classes.clueActive);
+            this.registryCellActive.element.removeClass(this.options.classes.cellActive);
+            this.registryCellActive = null;
+        }
+    };
+    CrosswordGame.prototype.goToCellAbove = function () {
+        if (this.registryCellActive) {
+            var target = this._getCellFor(this.registryCellActive, true, false);
+            if (target) {
+                this.goToCell(target);
+            }
+        }
+    };
+    CrosswordGame.prototype.goToCellBelow = function () {
+        if (this.registryCellActive) {
+            var target = this._getCellFor(this.registryCellActive, true, true);
+            if (target) {
+                this.goToCell(target);
+            }
+        }
+    };
+    CrosswordGame.prototype.goToCellRight = function () {
+        if (this.registryCellActive) {
+            var target = this._getCellFor(this.registryCellActive, false, true);
+            if (target) {
+                this.goToCell(target);
+            }
+        }
+    };
+    CrosswordGame.prototype.goToCellLeft = function () {
+        if (this.registryCellActive) {
+            var target = this._getCellFor(this.registryCellActive, false, false);
+            if (target) {
+                this.goToCell(target);
+            }
+        }
+    };
+    CrosswordGame.prototype.goToNextWord = function () {
+        if (this.registryCellActive) {
+            var target = this._getNextOrPrevClueFrom(this.registryCellActive, true);
+            this.cluesRegistry[target.code].fieldsElements[0].trigger('focus');
+        }
+    };
+    CrosswordGame.prototype.goToPrevWord = function () {
+        if (this.registryCellActive) {
+            var target = this._getNextOrPrevClueFrom(this.registryCellActive, false);
+            this.cluesRegistry[target.code].fieldsElements[0].trigger('focus');
+        }
+    };
+    CrosswordGame.prototype.checkClue = function (clueRegistry) {
+        var result;
+        clueRegistry = clueRegistry || this.registryActive;
+        if (clueRegistry) {
+            var prevCompleted = clueRegistry.isCompleted;
+            clueRegistry.isCompleted = clueRegistry.currentAnswer.join('').length === clueRegistry.definition.answer.length;
+            if (clueRegistry.isCompleted) {
+                var correct = 0;
+                var cellRegistries = clueRegistry.cellsRegistries;
+                for (var _i = 0, cellRegistries_1 = cellRegistries; _i < cellRegistries_1.length; _i++) {
+                    var registry = cellRegistries_1[_i];
+                    if (this._checkCellAnswer(registry)) {
+                        correct++;
+                    } else {
+                    }
+                }
+                clueRegistry.isCorrect = correct == cellRegistries.length;
+                this.updateClueStateClass(clueRegistry);
+                result = clueRegistry.isCorrect;
+            } else {
+                clueRegistry.isCorrect = false;
+                this.updateClueStateClass(clueRegistry);
+            }
+            if (prevCompleted != clueRegistry.isCompleted) {
+                this.element.trigger(crossword_events_1.CrosswordEvents.onClueCompleted, [{
+                        instance: this,
+                        isCorrect: clueRegistry.isCorrect,
+                        isCompleted: false,
+                        definition: clueRegistry.definition
+                    }]);
+            }
+        }
+        return result;
+    };
+    CrosswordGame.prototype.check = function () {
+        var cluesRegistry = this.cluesRegistry;
+        var correct = 0;
+        for (var clueCode in cluesRegistry) {
+            var clueRegistry = cluesRegistry[clueCode];
+            if (!clueRegistry.isCorrect) {
+                break;
+            }
+            correct++;
+        }
+        if (correct == Object.keys(cluesRegistry).length) {
+            this.element.trigger(crossword_events_1.CrosswordEvents.onSolved, [this]);
+        }
+    };
+    CrosswordGame.prototype.solve = function () {
+        var cluesRegistry = this.cluesRegistry;
+        for (var clueCode in cluesRegistry) {
+            var clueRegistry = cluesRegistry[clueCode], cellsRegistries = clueRegistry.cellsRegistries;
+            for (var _i = 0, cellsRegistries_1 = cellsRegistries; _i < cellsRegistries_1.length; _i++) {
+                var cellRegistry = cellsRegistries_1[_i];
+                cellRegistry.field.val(cellRegistry.definition.answer);
+            }
+        }
+        this.element.trigger(crossword_events_1.CrosswordEvents.onSolved, [this]);
+    };
+    CrosswordGame.prototype._getCreateOptions = function () {
+        var options = {
+            namespace: 'jq-crossword',
+            classes: {
+                root: 'c-crossword',
+                board: 'c-crossword__board',
+                row: 'c-crossword__row',
+                cell: 'c-crossword__cell',
+                cellActive: 'c-crossword__cell--active',
+                cellCorrect: 'c-crossword__cell--correct',
+                cellIncorrect: 'c-crossword__cell--incorrect',
+                clue: 'c-crossword__clue',
+                clueActive: 'c-crossword__clue--active',
+                clueCorrect: 'c-crossword__clue--correct',
+                clueIncorrect: 'c-crossword__clue--incorrect',
+                light: 'c-crossword__clue--light',
+                hint: 'c-crossword__clue--hint',
+                field: 'c-crossword__clue__field',
+                firstLetter: 'c-crossword__cell--first-letter',
+                firstLetterAcross: 'c-crossword__cell--first-letter-across',
+                firstLetterDown: 'c-crossword__cell--first-letter-down',
+                listItem: 'c-crossword__list-item',
+                cluesListContainer: 'c-crossword__clues',
+                cluesListTitle: 'c-crossword__clues__title',
+                clueList: 'c-crossword__clues__list',
+                disabled: 'c-crossword--disabled'
+            },
+            downListTitle: 'Down clues',
+            acrossListTitle: 'Across clues',
+            ignoreCase: true,
+            feedback: crossword_options_1.CrosswordFeedback.clue
+        };
+        return options;
+    };
+    CrosswordGame.prototype._checkCellAnswer = function (cellRegistry) {
+        if (cellRegistry.field.val()) {
+            if (this.options.ignoreCase) {
+                cellRegistry.isCorrect = new RegExp(cellRegistry.definition.answer, 'i').test(cellRegistry.currentAnswer);
+            } else {
+                cellRegistry.isCorrect = cellRegistry.currentAnswer == cellRegistry.definition.answer;
+            }
+        }
+        return cellRegistry.isCorrect;
+    };
+    CrosswordGame.prototype._create = function () {
+        this.element.addClass(this.options.classes.root);
+        this._createDefinition();
+        this.cluesRegistry = this._createClueRegistry();
+        this._construct();
+        this._createCluesLists();
+        this._addEvents();
+    };
+    CrosswordGame.prototype._addEvents = function () {
+        this.element.on('focus.' + this.options.namespace, '.' + this.options.classes.field, this._onFieldFocus.bind(this));
+        this.element.on('blur.' + this.options.namespace, '.' + this.options.classes.field, this._onFieldBlur.bind(this));
+        this.element.on('input.' + this.options.namespace, '.' + this.options.classes.field, this._onFieldChange.bind(this));
+        this.element.on('keydown.' + this.options.namespace, '.' + this.options.classes.field, this._onFieldKey.bind(this));
+        this.element.on('click.' + this.options.namespace, '.' + this.options.classes.listItem, this._onListItemClick.bind(this));
+    };
+    CrosswordGame.prototype.updateClueStateClass = function (clueRegistry) {
+        if (clueRegistry.isCompleted) {
+            var clueClassToAdd = clueRegistry.isCorrect ? this.options.classes.clueCorrect : this.options.classes.clueIncorrect, clueClassToRemove = !clueRegistry.isCorrect ? this.options.classes.clueCorrect : this.options.classes.clueIncorrect;
+            clueRegistry.listItem.removeClass(clueClassToRemove).addClass(clueClassToAdd);
+            clueRegistry.cellsAsJquery.removeClass(clueClassToRemove).addClass(clueClassToAdd);
+        } else {
+            var cellsRegistries = clueRegistry.cellsRegistries;
+            for (var _i = 0, cellsRegistries_2 = cellsRegistries; _i < cellsRegistries_2.length; _i++) {
+                var cellRegistry = cellsRegistries_2[_i];
+                if (!cellRegistry.acrossClueRegistry || !cellRegistry.downClueRegistry || !cellRegistry.acrossClueRegistry.isCompleted && !cellRegistry.downClueRegistry.isCompleted) {
+                    cellRegistry.element.removeClass([
+                        this.options.classes.clueCorrect,
+                        this.options.classes.clueIncorrect
+                    ]);
+                }
+            }
+            clueRegistry.listItem.removeClass([
+                this.options.classes.clueCorrect,
+                this.options.classes.clueIncorrect
+            ]);
+        }
+    };
+    CrosswordGame.prototype._onListItemClick = function (e) {
+        if (!this.options.disabled) {
+            this.interaction = true;
+            var $target = $(e.target), downCode = $target.data('down'), acrossCode = $target.data('across'), registry = void 0;
+            if (downCode) {
+                registry = this.cluesRegistry[downCode].cellsRegistries[0];
+            } else {
+                registry = this.cluesRegistry[acrossCode].cellsRegistries[0];
+            }
+            this.goToCell(registry);
+            this.interaction = false;
+        } else {
+            e.preventDefault();
+        }
+    };
+    CrosswordGame.prototype._getDefinitionForClosestToFirstLetter = function (cell) {
+        var result;
+        if (cell.acrossClue && cell.downClue) {
+            if (cell.acrossClueLetterIndex <= cell.downClueLetterIndex) {
+                result = cell.acrossClue;
+            } else {
+                result = cell.downClue;
+            }
+        } else {
+            result = cell.acrossClue || cell.downClue;
+        }
+        return result;
+    };
+    CrosswordGame.prototype._onFieldFocus = function (e) {
+        if (!this.options.disabled) {
+            this.interaction = true;
+            var $target = $(e.target), $cell = $target.parents('.' + this.options.classes.cell).first();
+            var x = $cell.data('x'), y = $cell.data('y');
+            this.goToCell(y, x);
+            this.interaction = false;
+        } else {
+            e.preventDefault();
+        }
+    };
+    CrosswordGame.prototype._onFieldBlur = function (e) {
+        if (!this.interaction) {
+            this.clearActive();
+        }
+    };
+    CrosswordGame.prototype._storeAndCheckAnswer = function (val, cellRegistry) {
+        cellRegistry.currentAnswer = val;
+        if (cellRegistry.definition.acrossClue) {
+            var registry = this.cluesRegistry[cellRegistry.definition.acrossClue.code], index = cellRegistry.definition.acrossClueLetterIndex;
+            registry.currentAnswer[index] = val;
+            if (this.options.feedback === crossword_options_1.CrosswordFeedback.clue) {
+                this.checkClue(registry);
+            }
+        }
+        if (cellRegistry.definition.downClue) {
+            var registry = this.cluesRegistry[cellRegistry.definition.downClue.code], index = cellRegistry.definition.downClueLetterIndex;
+            registry.currentAnswer[index] = val;
+            if (this.options.feedback === crossword_options_1.CrosswordFeedback.clue) {
+                this.checkClue(registry);
+            }
+        }
+        this.check();
+    };
+    CrosswordGame.prototype._onFieldChange = function (e) {
+        if (!this.options.disabled) {
+            this.interaction = true;
+            var val = this.registryCellActive.field.val();
+            if (!this.registryActive) {
+                var $target = $(e.target), $cell = $target.parents('.' + this.options.classes.cell).first();
+                var x = $cell.data('x'), y = $cell.data('y');
+                this.goToCell(y, x);
+            }
+            this._storeAndCheckAnswer(val, this.registryCellActive);
+            if (val) {
+                if (this.registryActive.definition.across) {
+                    this.goToCellRight();
+                } else {
+                    this.goToCellBelow();
+                }
+            } else {
+                if (this.registryActive.definition.across) {
+                    this.goToCellLeft();
+                } else {
+                    this.goToCellAbove();
+                }
+            }
+            this.interaction = false;
+        } else {
+            e.preventDefault();
+        }
+    };
+    CrosswordGame.prototype._activateClue = function (clue) {
+        var registry = this.cluesRegistry[clue.code];
+        if (registry && registry != this.registryActive) {
+            this.registryActive = registry;
+            this.element.find('.' + this.options.classes.clueActive).removeClass(this.options.classes.clueActive);
+            registry.cellsAsJquery.addClass(this.options.classes.clueActive);
+            registry.listItem.addClass(this.options.classes.clueActive);
+        }
+    };
+    CrosswordGame.prototype._getNextOrPrevClueFrom = function (cellRegistry, next) {
+        var cellDefinition = cellRegistry.definition, result, across, definition, useClues, alterClues, index;
+        if (cellDefinition.acrossClue && cellDefinition.downClue) {
+            var closestDefinition = this._getDefinitionForClosestToFirstLetter(cellRegistry.definition);
+            across = closestDefinition.across;
+            definition = closestDefinition;
+        } else {
+            across = cellDefinition.acrossClue != undefined;
+            definition = across ? cellDefinition.acrossClue : cellDefinition.downClue;
+        }
+        useClues = across ? cellDefinition.crossword.acrossClues : cellDefinition.crossword.downClues;
+        alterClues = across ? cellDefinition.crossword.downClues : cellDefinition.crossword.acrossClues;
+        index = useClues.findIndex(function (cell) {
+            return cell.number === definition.number;
+        });
+        if (index != -1) {
+            index += next ? 1 : -1;
+            var targetClue = void 0;
+            if (next && index < useClues.length || !next && index >= 0) {
+                targetClue = useClues[index];
+            } else {
+                targetClue = next ? alterClues[0] : alterClues.slice(-1)[0];
+            }
+            result = targetClue;
+        }
+        return result;
+    };
+    CrosswordGame.prototype._getCellFor = function (cell, vertical, increase) {
+        var result, definition = cell.definition, x = definition.x, y = definition.y, yTarget = vertical ? increase ? y + 1 : y - 1 : y, xTarget = vertical ? x : increase ? x + 1 : x - 1, targetRow = this.rowsRegistry[yTarget];
+        if (targetRow) {
+            var targetCell = targetRow.cellsRegistry[xTarget];
+            if (targetCell && targetCell.definition.light) {
+                if (targetCell.definition.hint) {
+                    result = this._getCellFor(targetCell, vertical, increase);
+                } else {
+                    result = targetCell;
+                }
+            }
+        }
+        return result;
+    };
+    CrosswordGame.prototype._onFieldKey = function (e) {
+        if (!this.options.disabled) {
+            this.interaction = true;
+            var $target = $(e.target), $cell = $target.parents('.' + this.options.classes.cell).first();
+            var x = $cell.data('x'), y = $cell.data('y'), cell = this.rowsRegistry[y].cellsRegistry[x];
+            switch (e.which) {
+            case $.ui.keyCode.SPACE:
+                e.preventDefault();
+                break;
+            case $.ui.keyCode.ENTER:
+            case $.ui.keyCode.TAB:
+                e.preventDefault();
+                if (!e.shiftKey) {
+                    this.goToNextWord();
+                } else {
+                    this.goToPrevWord();
+                }
+                break;
+            case $.ui.keyCode.UP:
+                this.goToCellAbove();
+                break;
+            case $.ui.keyCode.RIGHT:
+                this.goToCellRight();
+                break;
+            case $.ui.keyCode.DOWN:
+                this.goToCellBelow();
+                break;
+            case $.ui.keyCode.LEFT:
+                this.goToCellLeft();
+                break;
+            case $.ui.keyCode.BACKSPACE:
+                e.preventDefault();
+                cell.field.val('').trigger('input');
+                break;
+            default:
+                if (e.key.length == 1) {
+                    e.preventDefault();
+                    cell.field.val(e.key).trigger('input');
+                }
+                break;
+            }
+            this.interaction = false;
+        } else {
+            e.preventDefault();
+        }
+    };
+    CrosswordGame.prototype._createBoard = function () {
+        var result;
+        if ((typeof this.options.createBoard).toLowerCase() == 'function') {
+            result = this.options.createBoard.apply(this, arguments);
+        } else {
+            result = $('<table class="' + this.options.classes.board + '"></table>');
+        }
+        return result;
+    };
+    CrosswordGame.prototype._createRow = function (rowIndex) {
+        var result;
+        if ((typeof this.options.createRow).toLowerCase() == 'function') {
+            result = this.options.createRow.apply(this, arguments);
+        } else {
+            result = $('<tr class="' + this.options.classes.row + '" data-row="' + rowIndex + '"></tr>');
+        }
+        return result;
+    };
+    CrosswordGame.prototype._createCell = function (definition) {
+        var result;
+        if ((typeof this.options.createCell).toLowerCase() == 'function') {
+            result = this.options.createCell.apply(this, arguments);
+        } else {
+            result = $('<td class="' + this.options.classes.cell + '"></td>');
+        }
+        return result;
+    };
+    CrosswordGame.prototype._createCellField = function (definition) {
+        var result;
+        if ((typeof this.options.createCellField).toLowerCase() == 'function') {
+            result = this.options.createCellField.apply(this, arguments);
+        } else {
+            result = $('<input maxlength="1" tabindex="-1">');
+        }
+        return result;
+    };
+    CrosswordGame.prototype._createCluesListContainer = function (across) {
+        var result;
+        if ((typeof this.options.createCluesListContainer).toLowerCase() == 'function') {
+            result = this.options.createCluesListContainer.apply(this, arguments);
+        } else {
+            result = $('\n                <div class="' + this.options.classes.cluesListContainer + '">\n                    <p class="' + this.options.classes.cluesListTitle + '">' + (across ? this.options.acrossListTitle : this.options.downListTitle) + '</p>\n                </div>\n            ');
+        }
+        return result;
+    };
+    CrosswordGame.prototype._createCluesList = function (across) {
+        var result;
+        if ((typeof this.options.createCluesList).toLowerCase() == 'function') {
+            result = this.options.createCluesList.apply(this, arguments);
+        } else {
+            result = $('<ul class="' + this.options.classes.clueList + '"></ul>');
+        }
+        return result;
+    };
+    CrosswordGame.prototype._createCluesListItem = function (definition) {
+        var result;
+        if ((typeof this.options.createCluesListItem).toLowerCase() == 'function') {
+            result = this.options.createCluesListItem.apply(this, arguments);
+        } else {
+            result = $('<li></li>');
+        }
+        return result;
+    };
+    CrosswordGame.prototype._createDownCluesList = function () {
+        var down = this.definition.downClues;
+        this.downCluesContainer = this._createCluesListContainer(false);
+        this.downCluesList = this._createCluesList(false);
+        for (var _i = 0, down_1 = down; _i < down_1.length; _i++) {
+            var clue = down_1[_i];
+            var $clue = this._createCluesListItem(clue);
+            this._addInfoToListElement($clue, clue);
+            this.downCluesList.append($clue);
+            this.cluesRegistry[clue.code].listItem = $clue;
+        }
+        if (this.downCluesContainer) {
+            this.downCluesContainer.append(this.downCluesList);
+        }
+    };
+    CrosswordGame.prototype._createAcrossCluesList = function () {
+        var across = this.definition.acrossClues;
+        this.acrossCluesContainer = this._createCluesListContainer(true);
+        this.acrossCluesList = this._createCluesList(true);
+        for (var _i = 0, across_1 = across; _i < across_1.length; _i++) {
+            var clue = across_1[_i];
+            var $clue = this._createCluesListItem(clue);
+            this._addInfoToListElement($clue, clue);
+            this.acrossCluesList.append($clue);
+            this.cluesRegistry[clue.code].listItem = $clue;
+        }
+        if (this.acrossCluesContainer) {
+            this.acrossCluesContainer.append(this.acrossCluesList);
+        }
+    };
+    CrosswordGame.prototype._createCluesLists = function () {
+        this._createAcrossCluesList();
+        this._createDownCluesList();
+        if (this.options.acrossListAppendTo) {
+            if (this.acrossCluesContainer) {
+                $(this.options.acrossListAppendTo).append(this.acrossCluesContainer);
+            } else {
+                $(this.options.acrossListAppendTo).append(this.acrossCluesList);
+            }
+        } else {
+            this.element.append(this.acrossCluesContainer);
+        }
+        if (this.options.downListAppendTo) {
+            if (this.downCluesContainer) {
+                $(this.options.downListAppendTo).append(this.downCluesContainer);
+            } else {
+                $(this.options.downListAppendTo).append(this.downCluesList);
+            }
+        } else {
+            this.element.append(this.downCluesContainer);
+        }
+    };
+    CrosswordGame.prototype._addInfoToListElement = function (listItem, clueDefinition) {
+        listItem.addClass(this.options.classes.listItem);
+        if (clueDefinition.across) {
+            listItem.addClass(this.options.classes.clue + '--' + clueDefinition.code);
+            listItem.attr('data-across', clueDefinition.code);
+        } else {
+            listItem.addClass(this.options.classes.clue + '--' + clueDefinition.code);
+            listItem.attr('data-down', clueDefinition.code);
+        }
+        listItem.text(clueDefinition.clue);
+    };
+    CrosswordGame.prototype._addInfoToCellElement = function (cell, cellDefinition) {
+        cell.attr({
+            'data-x': cellDefinition.x,
+            'data-y': cellDefinition.y
+        });
+        if (cellDefinition.acrossClue || cellDefinition.downClue) {
+            cell.addClass(this.options.classes.clue);
+        }
+        if (cellDefinition.clueLabel) {
+            cell.addClass(this.options.classes.firstLetter);
+            if (cellDefinition.acrossClueLetterIndex == 0) {
+                cell.addClass(this.options.classes.firstLetterAcross);
+            }
+            if (cellDefinition.downClueLetterIndex == 0) {
+                cell.addClass(this.options.classes.firstLetterDown);
+            }
+        }
+        if (cellDefinition.acrossClue) {
+            cell.addClass(this.options.classes.clue + '--' + cellDefinition.acrossClue.code);
+            cell.attr('data-across', cellDefinition.acrossClue.number);
+        }
+        if (cellDefinition.downClue) {
+            cell.addClass(this.options.classes.clue + '--' + cellDefinition.downClue.code);
+            cell.attr('data-down', cellDefinition.downClue.number);
+        }
+        if (cellDefinition.light) {
+            cell.addClass(this.options.classes.light);
+            if (cellDefinition.hint) {
+                cell.addClass(this.options.classes.hint);
+            }
+        }
+    };
+    CrosswordGame.prototype._createClueRegistry = function () {
+        var crosswordClueRegistry = {}, definition = this.definition, clues = definition.acrossClues.concat(definition.downClues);
+        for (var clueIndex = 0, cluesLength = clues.length; clueIndex < cluesLength; clueIndex++) {
+            var currentClue = clues[clueIndex], registry = new crossword_clue_registry_1.CrosswordClueRegistry();
+            registry.definition = currentClue;
+            registry.currentAnswer = new Array(currentClue.answer.length);
+            crosswordClueRegistry[currentClue.code] = registry;
+        }
+        return crosswordClueRegistry;
+    };
+    CrosswordGame.prototype._construct = function () {
+        if (this.definition) {
+            var definition = this.definition, matrix = definition.matrix, board = this._createBoard(), rowsRegistry = [], crosswordClueRegistry = this.cluesRegistry;
+            for (var rowIndex = 0, matrixLength = matrix.length; rowIndex < matrixLength; rowIndex++) {
+                var definitions = matrix[rowIndex], rowElement = void 0, cells = [], cellsRegistry = [], rowRegistry = new crossword_row_registry_1.CrosswordRowRegistry();
+                rowRegistry.cellsRegistry = cellsRegistry;
+                for (var columnIndex = 0, columnsLength = definitions.length; columnIndex < columnsLength; columnIndex++) {
+                    var cellDefinition = definitions[columnIndex], cellElement = this._createCell(cellDefinition), cellRegistry = new crossword_cell_registry_1.CrosswordCellRegistry(), fieldElement = void 0;
+                    cellRegistry.rowRegistry = rowRegistry;
+                    this._addInfoToCellElement(cellElement, cellDefinition);
+                    cellRegistry.definition = cellDefinition;
+                    cellRegistry.element = cellElement;
+                    if (cellDefinition.light) {
+                        if (!cellDefinition.hint) {
+                            fieldElement = this._createCellField(cellDefinition);
+                            fieldElement.addClass(this.options.classes.field);
+                            cellRegistry.field = fieldElement;
+                            cellElement.append(fieldElement);
+                            if (cellDefinition.acrossClue) {
+                                var registry = crosswordClueRegistry[cellDefinition.acrossClue.code];
+                                registry.cellsElements.push(cellElement);
+                                registry.fieldsElements.push(fieldElement);
+                                registry.cellsRegistries.push(cellRegistry);
+                                cellRegistry.acrossClueRegistry = registry;
+                            }
+                            if (cellDefinition.downClue) {
+                                var registry = crosswordClueRegistry[cellDefinition.downClue.code];
+                                registry.cellsElements.push(cellElement);
+                                registry.fieldsElements.push(fieldElement);
+                                registry.cellsRegistries.push(cellRegistry);
+                                cellRegistry.downClueRegistry = registry;
+                            }
+                        } else {
+                            cellElement.text(cellDefinition.answer);
+                            if (cellDefinition.acrossClue) {
+                                var registry = crosswordClueRegistry[cellDefinition.acrossClue.code];
+                                registry.currentAnswer[cellDefinition.acrossClueLetterIndex] = cellDefinition.answer;
+                            }
+                            if (cellDefinition.downClue) {
+                                var registry = crosswordClueRegistry[cellDefinition.downClue.code];
+                                registry.currentAnswer[cellDefinition.downClueLetterIndex] = cellDefinition.answer;
+                            }
+                        }
+                    }
+                    cells.push(cellElement);
+                    cellsRegistry[columnIndex] = cellRegistry;
+                }
+                rowElement = this._createRow(rowIndex);
+                if (rowElement) {
+                    rowRegistry.element = rowElement;
+                    rowElement.append(cells);
+                    board.append(rowElement);
+                } else {
+                    board.append(cells);
+                }
+                rowsRegistry.push(rowRegistry);
+            }
+            this.rowsRegistry = rowsRegistry;
+            this.element.append(board);
+        }
+    };
+    CrosswordGame.prototype._createDefinition = function () {
+        var definition = this.options.definition;
+        if (definition) {
+            if (definition instanceof crossword_definition_1.CrosswordDefinition !== true) {
+                definition = new crossword_definition_1.CrosswordDefinition(definition);
+            }
+            this.definition = definition;
+        }
+    };
+    return CrosswordGame;
+}();
+exports.CrosswordGame = CrosswordGame;
+}
+// default/jquery.crossword.js
+_ece7.f[7] = function(module,exports){
+Object.defineProperty(exports, '__esModule', { value: true });
+var crossword_game_1 = _ece7.r(6);
+$.widget('ui.crossword', crossword_game_1.CrosswordGame.prototype);
+}
+var r = _ece7.r(0)
+if (r){for(var i in r){ window[i] = r[i] }}
+})();

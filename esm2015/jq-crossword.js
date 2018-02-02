@@ -1,1 +1,790 @@
-!function(){var e={f:{},m:{},r:function(s){var t=e.m[s];if(t)return t.m.exports;var i=e.f[s];return i?((t=e.m[s]={}).exports={},t.m={exports:t.exports},i(t.m,t.exports),t.m.exports):void 0}};e.f[0]=function(s,t){function i(e){for(var s in e)t.hasOwnProperty(s)||(t[s]=e[s])}Object.defineProperty(t,"__esModule",{value:!0}),i(e.r(1)),i(e.r(2)),i(e.r(3)),i(e.r(4)),i(e.r(5)),i(e.r(6)),i(e.r(7))},e.f[1]=function(e,s){Object.defineProperty(s,"__esModule",{value:!0}),function(e){e.clue="clue"}(s.CrosswordFeedback||(s.CrosswordFeedback={}))},e.f[2]=function(e,s){Object.defineProperty(s,"__esModule",{value:!0}),function(e){e.onClueCompleted="crossword:clue",e.onSolved="crossword:solved"}(s.CrosswordEvents||(s.CrosswordEvents={}))},e.f[3]=function(e,s){Object.defineProperty(s,"__esModule",{value:!0});s.CrosswordCellRegistry=class{}},e.f[4]=function(e,s){Object.defineProperty(s,"__esModule",{value:!0});s.CrosswordClueRegistry=class{constructor(){this.cellsElements=[],this.fieldsElements=[],this.cellsRegistries=[],this.currentAnswer=[],this.isCompleted=!1}get cellsAsJquery(){return this._$cells||(this._$cells=$($.map(this.cellsElements,e=>e.get(0)))),this._$cells}get fieldsAsJquery(){return this._$fields||(this._$fields=$($.map(this.fieldsElements,e=>e.get(0)))),this._$fields}}},e.f[5]=function(e,s){Object.defineProperty(s,"__esModule",{value:!0});s.CrosswordRowRegistry=class{}},e.f[6]=function(s,t){Object.defineProperty(t,"__esModule",{value:!0});const i=e.r("crossword-definition"),o=e.r(1),l=e.r(4),r=e.r(3),n=e.r(5),c=e.r(2);t.CrosswordGame=class{constructor(){this.cluesRegistry={}}disable(){this._super(),this.element.addClass(this.options.classes.disabled);const e=this.cluesRegistry;for(let s in e)e[s].fieldsAsJquery.prop("disabled",!0)}enable(){this._super(),this.element.removeClass(this.options.classes.disabled);const e=this.cluesRegistry;for(let s in e)e[s].fieldsAsJquery.prop("disabled",!1)}goToCell(e,s){let t,i,o;if("number"==(typeof e).toLowerCase()){let o=this.rowsRegistry[e];o&&(i=(t=o.cellsRegistry[s]).definition)}else i=(t=e).definition;return t&&i.light&&t!=this.registryCellActive&&(i.acrossClue&&i.downClue&&(0==i.acrossClueLetterIndex?o=i.acrossClue:0==i.downClueLetterIndex&&(o=i.downClue)),this.registryActive?(this.registryCellActive.element.removeClass(this.options.classes.cellActive),o=this.registryActive.definition==i.acrossClue?i.acrossClue:this.registryActive.definition==i.downClue?i.downClue:this._getDefinitionForClosestToFirstLetter(t.definition)):o=this._getDefinitionForClosestToFirstLetter(t.definition),this.registryCellActive=t,t.element.addClass(this.options.classes.cellActive),this._activateClue(o),t.field.is(":focus")||t.field.trigger("focus")),t}clearActive(){this.registryActive&&(this.registryActive=null,this.element.find("."+this.options.classes.clueActive).removeClass(this.options.classes.clueActive),this.registryCellActive.element.removeClass(this.options.classes.cellActive),this.registryCellActive=null)}goToCellAbove(){if(this.registryCellActive){let e=this._getCellFor(this.registryCellActive,!0,!1);e&&this.goToCell(e)}}goToCellBelow(){if(this.registryCellActive){let e=this._getCellFor(this.registryCellActive,!0,!0);e&&this.goToCell(e)}}goToCellRight(){if(this.registryCellActive){let e=this._getCellFor(this.registryCellActive,!1,!0);e&&this.goToCell(e)}}goToCellLeft(){if(this.registryCellActive){let e=this._getCellFor(this.registryCellActive,!1,!1);e&&this.goToCell(e)}}goToNextWord(){if(this.registryCellActive){let e=this._getNextOrPrevClueFrom(this.registryCellActive,!0);this.cluesRegistry[e.code].fieldsElements[0].trigger("focus")}}goToPrevWord(){if(this.registryCellActive){let e=this._getNextOrPrevClueFrom(this.registryCellActive,!1);this.cluesRegistry[e.code].fieldsElements[0].trigger("focus")}}checkClue(e){let s;if(e=e||this.registryActive){const t=e.isCompleted;if(e.isCompleted=e.currentAnswer.join("").length===e.definition.answer.length,e.isCompleted){let t=0;const i=e.cellsRegistries;for(let e of i)this._checkCellAnswer(e)&&t++;e.isCorrect=t==i.length,this.updateClueStateClass(e),s=e.isCorrect}else e.isCorrect=!1,this.updateClueStateClass(e);t!=e.isCompleted&&this.element.trigger(c.CrosswordEvents.onClueCompleted,[{instance:this,isCorrect:e.isCorrect,isCompleted:!1,definition:e.definition}])}return s}check(){const e=this.cluesRegistry;let s=0;for(let t in e){if(!e[t].isCorrect)break;s++}s==Object.keys(e).length&&this.element.trigger(c.CrosswordEvents.onSolved,[this])}solve(){const e=this.cluesRegistry;for(let s in e){const t=e[s].cellsRegistries;for(let e of t)e.field.val(e.definition.answer)}this.element.trigger(c.CrosswordEvents.onSolved,[this])}_getCreateOptions(){return{namespace:"jq-crossword",classes:{root:"c-crossword",board:"c-crossword__board",row:"c-crossword__row",cell:"c-crossword__cell",cellActive:"c-crossword__cell--active",cellCorrect:"c-crossword__cell--correct",cellIncorrect:"c-crossword__cell--incorrect",clue:"c-crossword__clue",clueActive:"c-crossword__clue--active",clueCorrect:"c-crossword__clue--correct",clueIncorrect:"c-crossword__clue--incorrect",light:"c-crossword__clue--light",hint:"c-crossword__clue--hint",field:"c-crossword__clue__field",firstLetter:"c-crossword__cell--first-letter",firstLetterAcross:"c-crossword__cell--first-letter-across",firstLetterDown:"c-crossword__cell--first-letter-down",listItem:"c-crossword__list-item",cluesListContainer:"c-crossword__clues",cluesListTitle:"c-crossword__clues__title",clueList:"c-crossword__clues__list",disabled:"c-crossword--disabled"},downListTitle:"Down clues",acrossListTitle:"Across clues",ignoreCase:!0,feedback:o.CrosswordFeedback.clue}}_checkCellAnswer(e){return e.field.val()&&(this.options.ignoreCase?e.isCorrect=new RegExp(e.definition.answer,"i").test(e.currentAnswer):e.isCorrect=e.currentAnswer==e.definition.answer),e.isCorrect}_create(){this.element.addClass(this.options.classes.root),this._createDefinition(),this.cluesRegistry=this._createClueRegistry(),this._construct(),this._createCluesLists(),this._addEvents()}_addEvents(){this.element.on(`focus.${this.options.namespace}`,"."+this.options.classes.field,this._onFieldFocus.bind(this)),this.element.on(`blur.${this.options.namespace}`,"."+this.options.classes.field,this._onFieldBlur.bind(this)),this.element.on(`input.${this.options.namespace}`,"."+this.options.classes.field,this._onFieldChange.bind(this)),this.element.on(`keydown.${this.options.namespace}`,"."+this.options.classes.field,this._onFieldKey.bind(this)),this.element.on(`click.${this.options.namespace}`,"."+this.options.classes.listItem,this._onListItemClick.bind(this))}updateClueStateClass(e){if(e.isCompleted){let s=e.isCorrect?this.options.classes.clueCorrect:this.options.classes.clueIncorrect,t=e.isCorrect?this.options.classes.clueIncorrect:this.options.classes.clueCorrect;e.listItem.removeClass(t).addClass(s),e.cellsAsJquery.removeClass(t).addClass(s)}else{const s=e.cellsRegistries;for(let e of s)e.acrossClueRegistry&&e.downClueRegistry&&(e.acrossClueRegistry.isCompleted||e.downClueRegistry.isCompleted)||e.element.removeClass([this.options.classes.clueCorrect,this.options.classes.clueIncorrect]);e.listItem.removeClass([this.options.classes.clueCorrect,this.options.classes.clueIncorrect])}}_onListItemClick(e){if(this.options.disabled)e.preventDefault();else{this.interaction=!0;let s,t=$(e.target),i=t.data("down"),o=t.data("across");s=i?this.cluesRegistry[i].cellsRegistries[0]:this.cluesRegistry[o].cellsRegistries[0],this.goToCell(s),this.interaction=!1}}_getDefinitionForClosestToFirstLetter(e){let s;return s=e.acrossClue&&e.downClue?e.acrossClueLetterIndex<=e.downClueLetterIndex?e.acrossClue:e.downClue:e.acrossClue||e.downClue}_onFieldFocus(e){if(this.options.disabled)e.preventDefault();else{this.interaction=!0;let s=$(e.target).parents("."+this.options.classes.cell).first(),t=s.data("x"),i=s.data("y");this.goToCell(i,t),this.interaction=!1}}_onFieldBlur(e){this.interaction||this.clearActive()}_storeAndCheckAnswer(e,s){if(s.currentAnswer=e,s.definition.acrossClue){let t=this.cluesRegistry[s.definition.acrossClue.code],i=s.definition.acrossClueLetterIndex;t.currentAnswer[i]=e,this.options.feedback===o.CrosswordFeedback.clue&&this.checkClue(t)}if(s.definition.downClue){let t=this.cluesRegistry[s.definition.downClue.code],i=s.definition.downClueLetterIndex;t.currentAnswer[i]=e,this.options.feedback===o.CrosswordFeedback.clue&&this.checkClue(t)}this.check()}_onFieldChange(e){if(this.options.disabled)e.preventDefault();else{this.interaction=!0;let s=this.registryCellActive.field.val();if(!this.registryActive){let s=$(e.target).parents("."+this.options.classes.cell).first(),t=s.data("x"),i=s.data("y");this.goToCell(i,t)}this._storeAndCheckAnswer(s,this.registryCellActive),s?this.registryActive.definition.across?this.goToCellRight():this.goToCellBelow():this.registryActive.definition.across?this.goToCellLeft():this.goToCellAbove(),this.interaction=!1}}_activateClue(e){let s=this.cluesRegistry[e.code];s&&s!=this.registryActive&&(this.registryActive=s,this.element.find("."+this.options.classes.clueActive).removeClass(this.options.classes.clueActive),s.cellsAsJquery.addClass(this.options.classes.clueActive),s.listItem.addClass(this.options.classes.clueActive))}_getNextOrPrevClueFrom(e,s){let t,i,o,l,r,n,c=e.definition;if(c.acrossClue&&c.downClue){let s=this._getDefinitionForClosestToFirstLetter(e.definition);i=s.across,o=s}else i=void 0!=c.acrossClue,o=i?c.acrossClue:c.downClue;if(l=i?c.crossword.acrossClues:c.crossword.downClues,r=i?c.crossword.downClues:c.crossword.acrossClues,-1!=(n=l.findIndex(e=>e.number===o.number))){let e;n+=s?1:-1,t=e=s&&n<l.length||!s&&n>=0?l[n]:s?r[0]:r.slice(-1)[0]}return t}_getCellFor(e,s,t){let i,o=e.definition,l=o.x,r=o.y,n=s?t?r+1:r-1:r,c=s?l:t?l+1:l-1,a=this.rowsRegistry[n];if(a){let e=a.cellsRegistry[c];e&&e.definition.light&&(i=e.definition.hint?this._getCellFor(e,s,t):e)}return i}_onFieldKey(e){if(this.options.disabled)e.preventDefault();else{this.interaction=!0;let s=$(e.target).parents("."+this.options.classes.cell).first(),t=s.data("x"),i=s.data("y"),o=this.rowsRegistry[i].cellsRegistry[t];switch(e.which){case $.ui.keyCode.SPACE:e.preventDefault();break;case $.ui.keyCode.ENTER:case $.ui.keyCode.TAB:e.preventDefault(),e.shiftKey?this.goToPrevWord():this.goToNextWord();break;case $.ui.keyCode.UP:this.goToCellAbove();break;case $.ui.keyCode.RIGHT:this.goToCellRight();break;case $.ui.keyCode.DOWN:this.goToCellBelow();break;case $.ui.keyCode.LEFT:this.goToCellLeft();break;case $.ui.keyCode.BACKSPACE:e.preventDefault(),o.field.val("").trigger("input");break;default:1==e.key.length&&(e.preventDefault(),o.field.val(e.key).trigger("input"))}this.interaction=!1}}_createBoard(){let e;return e="function"==(typeof this.options.createBoard).toLowerCase()?this.options.createBoard.apply(this,arguments):$(`<table class="${this.options.classes.board}"></table>`)}_createRow(e){let s;return s="function"==(typeof this.options.createRow).toLowerCase()?this.options.createRow.apply(this,arguments):$(`<tr class="${this.options.classes.row}" data-row="${e}"></tr>`)}_createCell(e){let s;return s="function"==(typeof this.options.createCell).toLowerCase()?this.options.createCell.apply(this,arguments):$(`<td class="${this.options.classes.cell}"></td>`)}_createCellField(e){let s;return s="function"==(typeof this.options.createCellField).toLowerCase()?this.options.createCellField.apply(this,arguments):$('<input maxlength="1" tabindex="-1">')}_createCluesListContainer(e){let s;return s="function"==(typeof this.options.createCluesListContainer).toLowerCase()?this.options.createCluesListContainer.apply(this,arguments):$(`\n                <div class="${this.options.classes.cluesListContainer}">\n                    <p class="${this.options.classes.cluesListTitle}">${e?this.options.acrossListTitle:this.options.downListTitle}</p>\n                </div>\n            `)}_createCluesList(e){let s;return s="function"==(typeof this.options.createCluesList).toLowerCase()?this.options.createCluesList.apply(this,arguments):$(`<ul class="${this.options.classes.clueList}"></ul>`)}_createCluesListItem(e){let s;return s="function"==(typeof this.options.createCluesListItem).toLowerCase()?this.options.createCluesListItem.apply(this,arguments):$("<li></li>")}_createDownCluesList(){let e=this.definition.downClues;this.downCluesContainer=this._createCluesListContainer(!1),this.downCluesList=this._createCluesList(!1);for(let s of e){const e=this._createCluesListItem(s);this._addInfoToListElement(e,s),this.downCluesList.append(e),this.cluesRegistry[s.code].listItem=e}this.downCluesContainer&&this.downCluesContainer.append(this.downCluesList)}_createAcrossCluesList(){let e=this.definition.acrossClues;this.acrossCluesContainer=this._createCluesListContainer(!0),this.acrossCluesList=this._createCluesList(!0);for(let s of e){const e=this._createCluesListItem(s);this._addInfoToListElement(e,s),this.acrossCluesList.append(e),this.cluesRegistry[s.code].listItem=e}this.acrossCluesContainer&&this.acrossCluesContainer.append(this.acrossCluesList)}_createCluesLists(){this._createAcrossCluesList(),this._createDownCluesList(),this.options.acrossListAppendTo?this.acrossCluesContainer?$(this.options.acrossListAppendTo).append(this.acrossCluesContainer):$(this.options.acrossListAppendTo).append(this.acrossCluesList):this.element.append(this.acrossCluesContainer),this.options.downListAppendTo?this.downCluesContainer?$(this.options.downListAppendTo).append(this.downCluesContainer):$(this.options.downListAppendTo).append(this.downCluesList):this.element.append(this.downCluesContainer)}_addInfoToListElement(e,s){e.addClass(this.options.classes.listItem),s.across?(e.addClass(this.options.classes.clue+"--"+s.code),e.attr("data-across",s.code)):(e.addClass(this.options.classes.clue+"--"+s.code),e.attr("data-down",s.code)),e.text(s.clue)}_addInfoToCellElement(e,s){e.attr({"data-x":s.x,"data-y":s.y}),(s.acrossClue||s.downClue)&&e.addClass(this.options.classes.clue),s.clueLabel&&(e.addClass(this.options.classes.firstLetter),0==s.acrossClueLetterIndex&&e.addClass(this.options.classes.firstLetterAcross),0==s.downClueLetterIndex&&e.addClass(this.options.classes.firstLetterDown)),s.acrossClue&&(e.addClass(this.options.classes.clue+"--"+s.acrossClue.code),e.attr("data-across",s.acrossClue.number)),s.downClue&&(e.addClass(this.options.classes.clue+"--"+s.downClue.code),e.attr("data-down",s.downClue.number)),s.light&&(e.addClass(this.options.classes.light),s.hint&&e.addClass(this.options.classes.hint))}_createClueRegistry(){let e={},s=this.definition,t=s.acrossClues.concat(s.downClues);for(let s=0,i=t.length;s<i;s++){let i=t[s],o=new l.CrosswordClueRegistry;o.definition=i,o.currentAnswer=new Array(i.answer.length),e[i.code]=o}return e}_construct(){if(this.definition){let e=this.definition.matrix,s=this._createBoard(),t=[],i=this.cluesRegistry;for(let o=0,l=e.length;o<l;o++){let l,c=e[o],a=[],d=[],h=new n.CrosswordRowRegistry;h.cellsRegistry=d;for(let e=0,s=c.length;e<s;e++){let s,t=c[e],o=this._createCell(t),l=new r.CrosswordCellRegistry;if(l.rowRegistry=h,this._addInfoToCellElement(o,t),l.definition=t,l.element=o,t.light)if(t.hint)o.text(t.answer),t.acrossClue&&(i[t.acrossClue.code].currentAnswer[t.acrossClueLetterIndex]=t.answer),t.downClue&&(i[t.downClue.code].currentAnswer[t.downClueLetterIndex]=t.answer);else{if((s=this._createCellField(t)).addClass(this.options.classes.field),l.field=s,o.append(s),t.acrossClue){let e=i[t.acrossClue.code];e.cellsElements.push(o),e.fieldsElements.push(s),e.cellsRegistries.push(l),l.acrossClueRegistry=e}if(t.downClue){let e=i[t.downClue.code];e.cellsElements.push(o),e.fieldsElements.push(s),e.cellsRegistries.push(l),l.downClueRegistry=e}}a.push(o),d[e]=l}(l=this._createRow(o))?(h.element=l,l.append(a),s.append(l)):s.append(a),t.push(h)}this.rowsRegistry=t,this.element.append(s)}}_createDefinition(){let e=this.options.definition;e&&(e instanceof i.CrosswordDefinition!=1&&(e=new i.CrosswordDefinition(e)),this.definition=e)}}},e.f[7]=function(s,t){Object.defineProperty(t,"__esModule",{value:!0});const i=e.r(6);$.widget("ui.crossword",i.CrosswordGame.prototype)};var s=e.r(0);if(s)for(var t in s)window[t]=s[t]}();
+(function(){
+    var _8a11 = {};
+    _8a11.f = {}
+    // cached modules
+    _8a11.m = {};
+    _8a11.r = function(id) {
+        var cached = _8a11.m[id];
+        // resolve if in cache
+        if (cached) {
+            return cached.m.exports;
+        }
+        var file = _8a11.f[id];
+        if (!file)
+            return;
+        cached = _8a11.m[id] = {};
+        cached.exports = {};
+        cached.m = { exports: cached.exports };
+        file(cached.m, cached.exports);
+        return cached.m.exports;
+    };
+// default/index.js
+_8a11.f[0] = function(module,exports){
+function __export(m) {
+    for (var p in m)
+        if (!exports.hasOwnProperty(p))
+            exports[p] = m[p];
+}
+Object.defineProperty(exports, '__esModule', { value: true });
+__export(_8a11.r(1));
+__export(_8a11.r(2));
+__export(_8a11.r(3));
+__export(_8a11.r(4));
+__export(_8a11.r(5));
+__export(_8a11.r(6));
+__export(_8a11.r(7));
+}
+// default/crossword-options.js
+_8a11.f[1] = function(module,exports){
+Object.defineProperty(exports, '__esModule', { value: true });
+var CrosswordFeedback;
+(function (CrosswordFeedback) {
+    CrosswordFeedback['clue'] = 'clue';
+}(CrosswordFeedback = exports.CrosswordFeedback || (exports.CrosswordFeedback = {})));
+}
+// default/crossword-events.js
+_8a11.f[2] = function(module,exports){
+Object.defineProperty(exports, '__esModule', { value: true });
+var CrosswordEvents;
+(function (CrosswordEvents) {
+    CrosswordEvents['onClueCompleted'] = 'crossword:clue';
+    CrosswordEvents['onSolved'] = 'crossword:solved';
+}(CrosswordEvents = exports.CrosswordEvents || (exports.CrosswordEvents = {})));
+}
+// default/crossword-cell-registry.js
+_8a11.f[3] = function(module,exports){
+Object.defineProperty(exports, '__esModule', { value: true });
+class CrosswordCellRegistry {
+}
+exports.CrosswordCellRegistry = CrosswordCellRegistry;
+}
+// default/crossword-clue-registry.js
+_8a11.f[4] = function(module,exports){
+Object.defineProperty(exports, '__esModule', { value: true });
+class CrosswordClueRegistry {
+    constructor() {
+        this.cellsElements = [];
+        this.fieldsElements = [];
+        this.cellsRegistries = [];
+        this.currentAnswer = [];
+        this.isCompleted = false;
+    }
+    get cellsAsJquery() {
+        if (!this._$cells) {
+            this._$cells = $($.map(this.cellsElements, val => val.get(0)));
+        }
+        return this._$cells;
+    }
+    get fieldsAsJquery() {
+        if (!this._$fields) {
+            this._$fields = $($.map(this.fieldsElements, val => val.get(0)));
+        }
+        return this._$fields;
+    }
+}
+exports.CrosswordClueRegistry = CrosswordClueRegistry;
+}
+// default/crossword-row-registry.js
+_8a11.f[5] = function(module,exports){
+Object.defineProperty(exports, '__esModule', { value: true });
+class CrosswordRowRegistry {
+}
+exports.CrosswordRowRegistry = CrosswordRowRegistry;
+}
+// default/crossword-game.js
+_8a11.f[6] = function(module,exports){
+Object.defineProperty(exports, '__esModule', { value: true });
+const crossword_definition_1 = _8a11.r('crossword-definition');
+const crossword_options_1 = _8a11.r(1);
+const crossword_clue_registry_1 = _8a11.r(4);
+const crossword_cell_registry_1 = _8a11.r(3);
+const crossword_row_registry_1 = _8a11.r(5);
+const crossword_events_1 = _8a11.r(2);
+class CrosswordGame {
+    constructor() {
+        this.cluesRegistry = {};
+    }
+    disable() {
+        this._super();
+        this.element.addClass(this.options.classes.disabled);
+        const cluesRegistry = this.cluesRegistry;
+        for (let clueCode in cluesRegistry) {
+            const clueRegistry = cluesRegistry[clueCode];
+            clueRegistry.fieldsAsJquery.prop('disabled', true);
+        }
+    }
+    enable() {
+        this._super();
+        this.element.removeClass(this.options.classes.disabled);
+        const cluesRegistry = this.cluesRegistry;
+        for (let clueCode in cluesRegistry) {
+            const clueRegistry = cluesRegistry[clueCode];
+            clueRegistry.fieldsAsJquery.prop('disabled', false);
+        }
+    }
+    goToCell(yOrCell, x) {
+        let cell, cellDefinition, definition;
+        if ((typeof yOrCell).toLowerCase() == 'number') {
+            let rowRegistry = this.rowsRegistry[yOrCell];
+            if (rowRegistry) {
+                cell = rowRegistry.cellsRegistry[x];
+                cellDefinition = cell.definition;
+            }
+        } else {
+            cell = yOrCell;
+            cellDefinition = cell.definition;
+        }
+        if (cell && cellDefinition.light && cell != this.registryCellActive) {
+            if (cellDefinition.acrossClue && cellDefinition.downClue) {
+                if (cellDefinition.acrossClueLetterIndex == 0) {
+                    definition = cellDefinition.acrossClue;
+                } else if (cellDefinition.downClueLetterIndex == 0) {
+                    definition = cellDefinition.downClue;
+                }
+            }
+            if (this.registryActive) {
+                this.registryCellActive.element.removeClass(this.options.classes.cellActive);
+                if (this.registryActive.definition == cellDefinition.acrossClue) {
+                    definition = cellDefinition.acrossClue;
+                } else if (this.registryActive.definition == cellDefinition.downClue) {
+                    definition = cellDefinition.downClue;
+                } else {
+                    definition = this._getDefinitionForClosestToFirstLetter(cell.definition);
+                }
+            } else {
+                definition = this._getDefinitionForClosestToFirstLetter(cell.definition);
+            }
+            this.registryCellActive = cell;
+            cell.element.addClass(this.options.classes.cellActive);
+            this._activateClue(definition);
+            if (!cell.field.is(':focus')) {
+                cell.field.trigger('focus');
+            }
+        }
+        return cell;
+    }
+    clearActive() {
+        if (this.registryActive) {
+            this.registryActive = null;
+            this.element.find('.' + this.options.classes.clueActive).removeClass(this.options.classes.clueActive);
+            this.registryCellActive.element.removeClass(this.options.classes.cellActive);
+            this.registryCellActive = null;
+        }
+    }
+    goToCellAbove() {
+        if (this.registryCellActive) {
+            let target = this._getCellFor(this.registryCellActive, true, false);
+            if (target) {
+                this.goToCell(target);
+            }
+        }
+    }
+    goToCellBelow() {
+        if (this.registryCellActive) {
+            let target = this._getCellFor(this.registryCellActive, true, true);
+            if (target) {
+                this.goToCell(target);
+            }
+        }
+    }
+    goToCellRight() {
+        if (this.registryCellActive) {
+            let target = this._getCellFor(this.registryCellActive, false, true);
+            if (target) {
+                this.goToCell(target);
+            }
+        }
+    }
+    goToCellLeft() {
+        if (this.registryCellActive) {
+            let target = this._getCellFor(this.registryCellActive, false, false);
+            if (target) {
+                this.goToCell(target);
+            }
+        }
+    }
+    goToNextWord() {
+        if (this.registryCellActive) {
+            let target = this._getNextOrPrevClueFrom(this.registryCellActive, true);
+            this.cluesRegistry[target.code].fieldsElements[0].trigger('focus');
+        }
+    }
+    goToPrevWord() {
+        if (this.registryCellActive) {
+            let target = this._getNextOrPrevClueFrom(this.registryCellActive, false);
+            this.cluesRegistry[target.code].fieldsElements[0].trigger('focus');
+        }
+    }
+    checkClue(clueRegistry) {
+        let result;
+        clueRegistry = clueRegistry || this.registryActive;
+        if (clueRegistry) {
+            const prevCompleted = clueRegistry.isCompleted;
+            clueRegistry.isCompleted = clueRegistry.currentAnswer.join('').length === clueRegistry.definition.answer.length;
+            if (clueRegistry.isCompleted) {
+                let correct = 0;
+                const cellRegistries = clueRegistry.cellsRegistries;
+                for (let registry of cellRegistries) {
+                    if (this._checkCellAnswer(registry)) {
+                        correct++;
+                    } else {
+                    }
+                }
+                clueRegistry.isCorrect = correct == cellRegistries.length;
+                this.updateClueStateClass(clueRegistry);
+                result = clueRegistry.isCorrect;
+            } else {
+                clueRegistry.isCorrect = false;
+                this.updateClueStateClass(clueRegistry);
+            }
+            if (prevCompleted != clueRegistry.isCompleted) {
+                this.element.trigger(crossword_events_1.CrosswordEvents.onClueCompleted, [{
+                        instance: this,
+                        isCorrect: clueRegistry.isCorrect,
+                        isCompleted: false,
+                        definition: clueRegistry.definition
+                    }]);
+            }
+        }
+        return result;
+    }
+    check() {
+        const cluesRegistry = this.cluesRegistry;
+        let correct = 0;
+        for (let clueCode in cluesRegistry) {
+            const clueRegistry = cluesRegistry[clueCode];
+            if (!clueRegistry.isCorrect) {
+                break;
+            }
+            correct++;
+        }
+        if (correct == Object.keys(cluesRegistry).length) {
+            this.element.trigger(crossword_events_1.CrosswordEvents.onSolved, [this]);
+        }
+    }
+    solve() {
+        const cluesRegistry = this.cluesRegistry;
+        for (let clueCode in cluesRegistry) {
+            const clueRegistry = cluesRegistry[clueCode], cellsRegistries = clueRegistry.cellsRegistries;
+            for (let cellRegistry of cellsRegistries) {
+                cellRegistry.field.val(cellRegistry.definition.answer);
+            }
+        }
+        this.element.trigger(crossword_events_1.CrosswordEvents.onSolved, [this]);
+    }
+    _getCreateOptions() {
+        let options = {
+            namespace: 'jq-crossword',
+            classes: {
+                root: 'c-crossword',
+                board: 'c-crossword__board',
+                row: 'c-crossword__row',
+                cell: 'c-crossword__cell',
+                cellActive: 'c-crossword__cell--active',
+                cellCorrect: 'c-crossword__cell--correct',
+                cellIncorrect: 'c-crossword__cell--incorrect',
+                clue: 'c-crossword__clue',
+                clueActive: 'c-crossword__clue--active',
+                clueCorrect: 'c-crossword__clue--correct',
+                clueIncorrect: 'c-crossword__clue--incorrect',
+                light: 'c-crossword__clue--light',
+                hint: 'c-crossword__clue--hint',
+                field: 'c-crossword__clue__field',
+                firstLetter: 'c-crossword__cell--first-letter',
+                firstLetterAcross: 'c-crossword__cell--first-letter-across',
+                firstLetterDown: 'c-crossword__cell--first-letter-down',
+                listItem: 'c-crossword__list-item',
+                cluesListContainer: 'c-crossword__clues',
+                cluesListTitle: 'c-crossword__clues__title',
+                clueList: 'c-crossword__clues__list',
+                disabled: 'c-crossword--disabled'
+            },
+            downListTitle: 'Down clues',
+            acrossListTitle: 'Across clues',
+            ignoreCase: true,
+            feedback: crossword_options_1.CrosswordFeedback.clue
+        };
+        return options;
+    }
+    _checkCellAnswer(cellRegistry) {
+        if (cellRegistry.field.val()) {
+            if (this.options.ignoreCase) {
+                cellRegistry.isCorrect = new RegExp(cellRegistry.definition.answer, 'i').test(cellRegistry.currentAnswer);
+            } else {
+                cellRegistry.isCorrect = cellRegistry.currentAnswer == cellRegistry.definition.answer;
+            }
+        }
+        return cellRegistry.isCorrect;
+    }
+    _create() {
+        this.element.addClass(this.options.classes.root);
+        this._createDefinition();
+        this.cluesRegistry = this._createClueRegistry();
+        this._construct();
+        this._createCluesLists();
+        this._addEvents();
+    }
+    _addEvents() {
+        this.element.on(`focus.${ this.options.namespace }`, '.' + this.options.classes.field, this._onFieldFocus.bind(this));
+        this.element.on(`blur.${ this.options.namespace }`, '.' + this.options.classes.field, this._onFieldBlur.bind(this));
+        this.element.on(`input.${ this.options.namespace }`, '.' + this.options.classes.field, this._onFieldChange.bind(this));
+        this.element.on(`keydown.${ this.options.namespace }`, '.' + this.options.classes.field, this._onFieldKey.bind(this));
+        this.element.on(`click.${ this.options.namespace }`, '.' + this.options.classes.listItem, this._onListItemClick.bind(this));
+    }
+    updateClueStateClass(clueRegistry) {
+        if (clueRegistry.isCompleted) {
+            let clueClassToAdd = clueRegistry.isCorrect ? this.options.classes.clueCorrect : this.options.classes.clueIncorrect, clueClassToRemove = !clueRegistry.isCorrect ? this.options.classes.clueCorrect : this.options.classes.clueIncorrect;
+            clueRegistry.listItem.removeClass(clueClassToRemove).addClass(clueClassToAdd);
+            clueRegistry.cellsAsJquery.removeClass(clueClassToRemove).addClass(clueClassToAdd);
+        } else {
+            const cellsRegistries = clueRegistry.cellsRegistries;
+            for (let cellRegistry of cellsRegistries) {
+                if (!cellRegistry.acrossClueRegistry || !cellRegistry.downClueRegistry || !cellRegistry.acrossClueRegistry.isCompleted && !cellRegistry.downClueRegistry.isCompleted) {
+                    cellRegistry.element.removeClass([
+                        this.options.classes.clueCorrect,
+                        this.options.classes.clueIncorrect
+                    ]);
+                }
+            }
+            clueRegistry.listItem.removeClass([
+                this.options.classes.clueCorrect,
+                this.options.classes.clueIncorrect
+            ]);
+        }
+    }
+    _onListItemClick(e) {
+        if (!this.options.disabled) {
+            this.interaction = true;
+            let $target = $(e.target), downCode = $target.data('down'), acrossCode = $target.data('across'), registry;
+            if (downCode) {
+                registry = this.cluesRegistry[downCode].cellsRegistries[0];
+            } else {
+                registry = this.cluesRegistry[acrossCode].cellsRegistries[0];
+            }
+            this.goToCell(registry);
+            this.interaction = false;
+        } else {
+            e.preventDefault();
+        }
+    }
+    _getDefinitionForClosestToFirstLetter(cell) {
+        let result;
+        if (cell.acrossClue && cell.downClue) {
+            if (cell.acrossClueLetterIndex <= cell.downClueLetterIndex) {
+                result = cell.acrossClue;
+            } else {
+                result = cell.downClue;
+            }
+        } else {
+            result = cell.acrossClue || cell.downClue;
+        }
+        return result;
+    }
+    _onFieldFocus(e) {
+        if (!this.options.disabled) {
+            this.interaction = true;
+            let $target = $(e.target), $cell = $target.parents('.' + this.options.classes.cell).first();
+            let x = $cell.data('x'), y = $cell.data('y');
+            this.goToCell(y, x);
+            this.interaction = false;
+        } else {
+            e.preventDefault();
+        }
+    }
+    _onFieldBlur(e) {
+        if (!this.interaction) {
+            this.clearActive();
+        }
+    }
+    _storeAndCheckAnswer(val, cellRegistry) {
+        cellRegistry.currentAnswer = val;
+        if (cellRegistry.definition.acrossClue) {
+            let registry = this.cluesRegistry[cellRegistry.definition.acrossClue.code], index = cellRegistry.definition.acrossClueLetterIndex;
+            registry.currentAnswer[index] = val;
+            if (this.options.feedback === crossword_options_1.CrosswordFeedback.clue) {
+                this.checkClue(registry);
+            }
+        }
+        if (cellRegistry.definition.downClue) {
+            let registry = this.cluesRegistry[cellRegistry.definition.downClue.code], index = cellRegistry.definition.downClueLetterIndex;
+            registry.currentAnswer[index] = val;
+            if (this.options.feedback === crossword_options_1.CrosswordFeedback.clue) {
+                this.checkClue(registry);
+            }
+        }
+        this.check();
+    }
+    _onFieldChange(e) {
+        if (!this.options.disabled) {
+            this.interaction = true;
+            let val = this.registryCellActive.field.val();
+            if (!this.registryActive) {
+                let $target = $(e.target), $cell = $target.parents('.' + this.options.classes.cell).first();
+                let x = $cell.data('x'), y = $cell.data('y');
+                this.goToCell(y, x);
+            }
+            this._storeAndCheckAnswer(val, this.registryCellActive);
+            if (val) {
+                if (this.registryActive.definition.across) {
+                    this.goToCellRight();
+                } else {
+                    this.goToCellBelow();
+                }
+            } else {
+                if (this.registryActive.definition.across) {
+                    this.goToCellLeft();
+                } else {
+                    this.goToCellAbove();
+                }
+            }
+            this.interaction = false;
+        } else {
+            e.preventDefault();
+        }
+    }
+    _activateClue(clue) {
+        let registry = this.cluesRegistry[clue.code];
+        if (registry && registry != this.registryActive) {
+            this.registryActive = registry;
+            this.element.find('.' + this.options.classes.clueActive).removeClass(this.options.classes.clueActive);
+            registry.cellsAsJquery.addClass(this.options.classes.clueActive);
+            registry.listItem.addClass(this.options.classes.clueActive);
+        }
+    }
+    _getNextOrPrevClueFrom(cellRegistry, next) {
+        let cellDefinition = cellRegistry.definition, result, across, definition, useClues, alterClues, index;
+        if (cellDefinition.acrossClue && cellDefinition.downClue) {
+            let closestDefinition = this._getDefinitionForClosestToFirstLetter(cellRegistry.definition);
+            across = closestDefinition.across;
+            definition = closestDefinition;
+        } else {
+            across = cellDefinition.acrossClue != undefined;
+            definition = across ? cellDefinition.acrossClue : cellDefinition.downClue;
+        }
+        useClues = across ? cellDefinition.crossword.acrossClues : cellDefinition.crossword.downClues;
+        alterClues = across ? cellDefinition.crossword.downClues : cellDefinition.crossword.acrossClues;
+        index = useClues.findIndex(cell => cell.number === definition.number);
+        if (index != -1) {
+            index += next ? 1 : -1;
+            let targetClue;
+            if (next && index < useClues.length || !next && index >= 0) {
+                targetClue = useClues[index];
+            } else {
+                targetClue = next ? alterClues[0] : alterClues.slice(-1)[0];
+            }
+            result = targetClue;
+        }
+        return result;
+    }
+    _getCellFor(cell, vertical, increase) {
+        let result, definition = cell.definition, x = definition.x, y = definition.y, yTarget = vertical ? increase ? y + 1 : y - 1 : y, xTarget = vertical ? x : increase ? x + 1 : x - 1, targetRow = this.rowsRegistry[yTarget];
+        if (targetRow) {
+            let targetCell = targetRow.cellsRegistry[xTarget];
+            if (targetCell && targetCell.definition.light) {
+                if (targetCell.definition.hint) {
+                    result = this._getCellFor(targetCell, vertical, increase);
+                } else {
+                    result = targetCell;
+                }
+            }
+        }
+        return result;
+    }
+    _onFieldKey(e) {
+        if (!this.options.disabled) {
+            this.interaction = true;
+            let $target = $(e.target), $cell = $target.parents('.' + this.options.classes.cell).first();
+            let x = $cell.data('x'), y = $cell.data('y'), cell = this.rowsRegistry[y].cellsRegistry[x];
+            switch (e.which) {
+            case $.ui.keyCode.SPACE:
+                e.preventDefault();
+                break;
+            case $.ui.keyCode.ENTER:
+            case $.ui.keyCode.TAB:
+                e.preventDefault();
+                if (!e.shiftKey) {
+                    this.goToNextWord();
+                } else {
+                    this.goToPrevWord();
+                }
+                break;
+            case $.ui.keyCode.UP:
+                this.goToCellAbove();
+                break;
+            case $.ui.keyCode.RIGHT:
+                this.goToCellRight();
+                break;
+            case $.ui.keyCode.DOWN:
+                this.goToCellBelow();
+                break;
+            case $.ui.keyCode.LEFT:
+                this.goToCellLeft();
+                break;
+            case $.ui.keyCode.BACKSPACE:
+                e.preventDefault();
+                cell.field.val('').trigger('input');
+                break;
+            default:
+                if (e.key.length == 1) {
+                    e.preventDefault();
+                    cell.field.val(e.key).trigger('input');
+                }
+                break;
+            }
+            this.interaction = false;
+        } else {
+            e.preventDefault();
+        }
+    }
+    _createBoard() {
+        let result;
+        if ((typeof this.options.createBoard).toLowerCase() == 'function') {
+            result = this.options.createBoard.apply(this, arguments);
+        } else {
+            result = $(`<table class="${ this.options.classes.board }"></table>`);
+        }
+        return result;
+    }
+    _createRow(rowIndex) {
+        let result;
+        if ((typeof this.options.createRow).toLowerCase() == 'function') {
+            result = this.options.createRow.apply(this, arguments);
+        } else {
+            result = $(`<tr class="${ this.options.classes.row }" data-row="${ rowIndex }"></tr>`);
+        }
+        return result;
+    }
+    _createCell(definition) {
+        let result;
+        if ((typeof this.options.createCell).toLowerCase() == 'function') {
+            result = this.options.createCell.apply(this, arguments);
+        } else {
+            result = $(`<td class="${ this.options.classes.cell }"></td>`);
+        }
+        return result;
+    }
+    _createCellField(definition) {
+        let result;
+        if ((typeof this.options.createCellField).toLowerCase() == 'function') {
+            result = this.options.createCellField.apply(this, arguments);
+        } else {
+            result = $(`<input maxlength="1" tabindex="-1">`);
+        }
+        return result;
+    }
+    _createCluesListContainer(across) {
+        let result;
+        if ((typeof this.options.createCluesListContainer).toLowerCase() == 'function') {
+            result = this.options.createCluesListContainer.apply(this, arguments);
+        } else {
+            result = $(`
+                <div class="${ this.options.classes.cluesListContainer }">
+                    <p class="${ this.options.classes.cluesListTitle }">${ across ? this.options.acrossListTitle : this.options.downListTitle }</p>
+                </div>
+            `);
+        }
+        return result;
+    }
+    _createCluesList(across) {
+        let result;
+        if ((typeof this.options.createCluesList).toLowerCase() == 'function') {
+            result = this.options.createCluesList.apply(this, arguments);
+        } else {
+            result = $(`<ul class="${ this.options.classes.clueList }"></ul>`);
+        }
+        return result;
+    }
+    _createCluesListItem(definition) {
+        let result;
+        if ((typeof this.options.createCluesListItem).toLowerCase() == 'function') {
+            result = this.options.createCluesListItem.apply(this, arguments);
+        } else {
+            result = $(`<li></li>`);
+        }
+        return result;
+    }
+    _createDownCluesList() {
+        let down = this.definition.downClues;
+        this.downCluesContainer = this._createCluesListContainer(false);
+        this.downCluesList = this._createCluesList(false);
+        for (let clue of down) {
+            const $clue = this._createCluesListItem(clue);
+            this._addInfoToListElement($clue, clue);
+            this.downCluesList.append($clue);
+            this.cluesRegistry[clue.code].listItem = $clue;
+        }
+        if (this.downCluesContainer) {
+            this.downCluesContainer.append(this.downCluesList);
+        }
+    }
+    _createAcrossCluesList() {
+        let across = this.definition.acrossClues;
+        this.acrossCluesContainer = this._createCluesListContainer(true);
+        this.acrossCluesList = this._createCluesList(true);
+        for (let clue of across) {
+            const $clue = this._createCluesListItem(clue);
+            this._addInfoToListElement($clue, clue);
+            this.acrossCluesList.append($clue);
+            this.cluesRegistry[clue.code].listItem = $clue;
+        }
+        if (this.acrossCluesContainer) {
+            this.acrossCluesContainer.append(this.acrossCluesList);
+        }
+    }
+    _createCluesLists() {
+        this._createAcrossCluesList();
+        this._createDownCluesList();
+        if (this.options.acrossListAppendTo) {
+            if (this.acrossCluesContainer) {
+                $(this.options.acrossListAppendTo).append(this.acrossCluesContainer);
+            } else {
+                $(this.options.acrossListAppendTo).append(this.acrossCluesList);
+            }
+        } else {
+            this.element.append(this.acrossCluesContainer);
+        }
+        if (this.options.downListAppendTo) {
+            if (this.downCluesContainer) {
+                $(this.options.downListAppendTo).append(this.downCluesContainer);
+            } else {
+                $(this.options.downListAppendTo).append(this.downCluesList);
+            }
+        } else {
+            this.element.append(this.downCluesContainer);
+        }
+    }
+    _addInfoToListElement(listItem, clueDefinition) {
+        listItem.addClass(this.options.classes.listItem);
+        if (clueDefinition.across) {
+            listItem.addClass(this.options.classes.clue + '--' + clueDefinition.code);
+            listItem.attr('data-across', clueDefinition.code);
+        } else {
+            listItem.addClass(this.options.classes.clue + '--' + clueDefinition.code);
+            listItem.attr('data-down', clueDefinition.code);
+        }
+        listItem.text(clueDefinition.clue);
+    }
+    _addInfoToCellElement(cell, cellDefinition) {
+        cell.attr({
+            'data-x': cellDefinition.x,
+            'data-y': cellDefinition.y
+        });
+        if (cellDefinition.acrossClue || cellDefinition.downClue) {
+            cell.addClass(this.options.classes.clue);
+        }
+        if (cellDefinition.clueLabel) {
+            cell.addClass(this.options.classes.firstLetter);
+            if (cellDefinition.acrossClueLetterIndex == 0) {
+                cell.addClass(this.options.classes.firstLetterAcross);
+            }
+            if (cellDefinition.downClueLetterIndex == 0) {
+                cell.addClass(this.options.classes.firstLetterDown);
+            }
+        }
+        if (cellDefinition.acrossClue) {
+            cell.addClass(this.options.classes.clue + '--' + cellDefinition.acrossClue.code);
+            cell.attr('data-across', cellDefinition.acrossClue.number);
+        }
+        if (cellDefinition.downClue) {
+            cell.addClass(this.options.classes.clue + '--' + cellDefinition.downClue.code);
+            cell.attr('data-down', cellDefinition.downClue.number);
+        }
+        if (cellDefinition.light) {
+            cell.addClass(this.options.classes.light);
+            if (cellDefinition.hint) {
+                cell.addClass(this.options.classes.hint);
+            }
+        }
+    }
+    _createClueRegistry() {
+        let crosswordClueRegistry = {}, definition = this.definition, clues = definition.acrossClues.concat(definition.downClues);
+        for (let clueIndex = 0, cluesLength = clues.length; clueIndex < cluesLength; clueIndex++) {
+            let currentClue = clues[clueIndex], registry = new crossword_clue_registry_1.CrosswordClueRegistry();
+            registry.definition = currentClue;
+            registry.currentAnswer = new Array(currentClue.answer.length);
+            crosswordClueRegistry[currentClue.code] = registry;
+        }
+        return crosswordClueRegistry;
+    }
+    _construct() {
+        if (this.definition) {
+            let definition = this.definition, matrix = definition.matrix, board = this._createBoard(), rowsRegistry = [], crosswordClueRegistry = this.cluesRegistry;
+            for (let rowIndex = 0, matrixLength = matrix.length; rowIndex < matrixLength; rowIndex++) {
+                let definitions = matrix[rowIndex], rowElement, cells = [], cellsRegistry = [], rowRegistry = new crossword_row_registry_1.CrosswordRowRegistry();
+                rowRegistry.cellsRegistry = cellsRegistry;
+                for (let columnIndex = 0, columnsLength = definitions.length; columnIndex < columnsLength; columnIndex++) {
+                    let cellDefinition = definitions[columnIndex], cellElement = this._createCell(cellDefinition), cellRegistry = new crossword_cell_registry_1.CrosswordCellRegistry(), fieldElement;
+                    cellRegistry.rowRegistry = rowRegistry;
+                    this._addInfoToCellElement(cellElement, cellDefinition);
+                    cellRegistry.definition = cellDefinition;
+                    cellRegistry.element = cellElement;
+                    if (cellDefinition.light) {
+                        if (!cellDefinition.hint) {
+                            fieldElement = this._createCellField(cellDefinition);
+                            fieldElement.addClass(this.options.classes.field);
+                            cellRegistry.field = fieldElement;
+                            cellElement.append(fieldElement);
+                            if (cellDefinition.acrossClue) {
+                                let registry = crosswordClueRegistry[cellDefinition.acrossClue.code];
+                                registry.cellsElements.push(cellElement);
+                                registry.fieldsElements.push(fieldElement);
+                                registry.cellsRegistries.push(cellRegistry);
+                                cellRegistry.acrossClueRegistry = registry;
+                            }
+                            if (cellDefinition.downClue) {
+                                let registry = crosswordClueRegistry[cellDefinition.downClue.code];
+                                registry.cellsElements.push(cellElement);
+                                registry.fieldsElements.push(fieldElement);
+                                registry.cellsRegistries.push(cellRegistry);
+                                cellRegistry.downClueRegistry = registry;
+                            }
+                        } else {
+                            cellElement.text(cellDefinition.answer);
+                            if (cellDefinition.acrossClue) {
+                                let registry = crosswordClueRegistry[cellDefinition.acrossClue.code];
+                                registry.currentAnswer[cellDefinition.acrossClueLetterIndex] = cellDefinition.answer;
+                            }
+                            if (cellDefinition.downClue) {
+                                let registry = crosswordClueRegistry[cellDefinition.downClue.code];
+                                registry.currentAnswer[cellDefinition.downClueLetterIndex] = cellDefinition.answer;
+                            }
+                        }
+                    }
+                    cells.push(cellElement);
+                    cellsRegistry[columnIndex] = cellRegistry;
+                }
+                rowElement = this._createRow(rowIndex);
+                if (rowElement) {
+                    rowRegistry.element = rowElement;
+                    rowElement.append(cells);
+                    board.append(rowElement);
+                } else {
+                    board.append(cells);
+                }
+                rowsRegistry.push(rowRegistry);
+            }
+            this.rowsRegistry = rowsRegistry;
+            this.element.append(board);
+        }
+    }
+    _createDefinition() {
+        let definition = this.options.definition;
+        if (definition) {
+            if (definition instanceof crossword_definition_1.CrosswordDefinition !== true) {
+                definition = new crossword_definition_1.CrosswordDefinition(definition);
+            }
+            this.definition = definition;
+        }
+    }
+}
+exports.CrosswordGame = CrosswordGame;
+}
+// default/jquery.crossword.js
+_8a11.f[7] = function(module,exports){
+Object.defineProperty(exports, '__esModule', { value: true });
+const crossword_game_1 = _8a11.r(6);
+$.widget('ui.crossword', crossword_game_1.CrosswordGame.prototype);
+}
+var r = _8a11.r(0)
+if (r){for(var i in r){ window[i] = r[i] }}
+})();
