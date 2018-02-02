@@ -26,8 +26,11 @@ export interface CrosswordClueCompleteEvent{
 }
 export enum CrosswordEvents{
     /**
-     * Triggered when a clue is completed or
+     * Triggered when a clue is completed
      */
     onClueCompleted = "crossword:clue",
-    onEnd = "crossword:end"
+    /**
+     * Triggered when the game is solved
+     */
+    onSolved = "crossword:solved"
 }

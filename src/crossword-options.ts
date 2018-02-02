@@ -24,6 +24,11 @@ export interface CrosswordOptions {
      */
     namespace?: string;
     /**
+     * Disable the widget
+     * @default false
+     */
+    disabled?:boolean;
+    /**
      * Definition to use
      */
     definition?: CrosswordDefinition;

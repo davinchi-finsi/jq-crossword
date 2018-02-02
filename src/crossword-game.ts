@@ -76,17 +76,13 @@ export class CrosswordGame {
      * Disable the widget
      */
     disable() {
+        //@ts-ignore
+        this._super();
         this.element.addClass(this.options.classes.disabled);
-        let rowsRegistry = this.rowsRegistry;
-        for (let rowIndex = 0, rowsRegistryLength = rowsRegistry.length; rowIndex < rowsRegistryLength; rowIndex++) {
-            let currentRow = rowsRegistry[rowIndex],
-                cellsRegistry = currentRow.cellsRegistry;
-            for (let cellIndex = 0, cellsRegistryLength = cellsRegistry.length; cellIndex < cellsRegistryLength; cellIndex++) {
-                let currentCell = cellsRegistry[cellIndex];
-                currentCell.element.prop("disabled", true);
-                currentCell.element.addClass(this.options.classes.disabled);
-            }
-
+        const cluesRegistry = this.cluesRegistry;
+        for(let clueCode in cluesRegistry){
+            const clueRegistry = cluesRegistry[clueCode];
+            clueRegistry.fieldsAsJquery.prop("disabled",true);
         }
     }
 
@@ -94,17 +90,13 @@ export class CrosswordGame {
      * Enable the widget
      */
     enable() {
+        //@ts-ignore
+        this._super();
         this.element.removeClass(this.options.classes.disabled);
-        let rowsRegistry = this.rowsRegistry;
-        for (let rowIndex = 0, rowsRegistryLength = rowsRegistry.length; rowIndex < rowsRegistryLength; rowIndex++) {
-            let currentRow = rowsRegistry[rowIndex],
-                cellsRegistry = currentRow.cellsRegistry;
-            for (let cellIndex = 0, cellsRegistryLength = cellsRegistry.length; cellIndex < cellsRegistryLength; cellIndex++) {
-                let currentCell = cellsRegistry[cellIndex];
-                currentCell.element.prop("disabled", false);
-                currentCell.element.removeClass(this.options.classes.disabled);
-            }
-
+        const cluesRegistry = this.cluesRegistry;
+        for(let clueCode in cluesRegistry){
+            const clueRegistry = cluesRegistry[clueCode];
+            clueRegistry.fieldsAsJquery.prop("disabled",false);
         }
     }
 
@@ -322,6 +314,23 @@ export class CrosswordGame {
     }
 
     /**
+     * Check if the game has been solved
+     */
+    check(){
+        const cluesRegistry = this.cluesRegistry;
+        let correct = 0;
+        for(let clueCode in cluesRegistry){
+            const clueRegistry = cluesRegistry[clueCode];
+            if(!clueRegistry.isCorrect){
+                break;
+            }
+            correct++;
+        }
+        if(correct == Object.keys(cluesRegistry).length){
+            this.element.trigger(CrosswordEvents.onSolved,[this]);
+        }
+    }
+    /**
      * Resolve the game
      */
     solve(){
@@ -333,6 +342,7 @@ export class CrosswordGame {
                 cellRegistry.field.val(cellRegistry.definition.answer);
             }
         }
+        this.element.trigger(CrosswordEvents.onSolved,[this]);
     }
     /**
      * JQuery ui function to get the default options
@@ -458,7 +468,7 @@ export class CrosswordGame {
      * @private
      */
     protected _onListItemClick(e) {
-        if (!this.disabled) {
+        if (!this.options.disabled) {
             this.interaction = true;
             let $target = $(e.target),
                 downCode = $target.data("down"),
@@ -506,7 +516,7 @@ export class CrosswordGame {
      * @private
      */
     protected _onFieldFocus(e) {
-        if (!this.disabled) {
+        if (!this.options.disabled) {
             this.interaction = true;
             let $target = $(e.target),
                 $cell = $target.parents("." + this.options.classes.cell).first();
@@ -558,6 +568,7 @@ export class CrosswordGame {
                 this.checkClue(registry);
             }
         }
+        this.check();
         /*if(this.options.feedback == CrosswordFeedback.cell){
             this.checkCell();
         }*/
@@ -568,7 +579,7 @@ export class CrosswordGame {
      * @private
      */
     protected _onFieldChange(e) {
-        if (!this.disabled) {
+        if (!this.options.disabled) {
             this.interaction = true;
             let val = <string>this.registryCellActive.field.val();
             //check the answer
@@ -702,7 +713,7 @@ export class CrosswordGame {
      * @private
      */
     protected _onFieldKey(e) {
-        if (!this.disabled) {
+        if (!this.options.disabled) {
             this.interaction = true;
             let $target = $(e.target),
                 $cell = $target.parents("." + this.options.classes.cell).first();
