@@ -19,14 +19,14 @@ Sparky.context(class {
                     containedAPI: true,
                     ensureES5: !es6,
                     uglify: this.isProduction,
-                    bakeApiIntoBundle: "crossword-definition",
+                    bakeApiIntoBundle: "jq-crossword",
                     noConflictApi:true
                 })
             ]
         });
     }
     createBundle(fuse) {
-        const app = fuse.bundle("crossword-definition");
+        const app = fuse.bundle("jq-crossword");
         if (!this.isProduction) {
             app.watch();
         }
@@ -34,7 +34,7 @@ Sparky.context(class {
         return app;
     }
     createES6Bundle(fuse) {
-        const app = fuse.bundle("crossword-definition");
+        const app = fuse.bundle("jq-crossword");
         if (!this.isProduction) {
             app.watch();
         }
