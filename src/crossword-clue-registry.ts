@@ -1,7 +1,5 @@
 import {
-    CrosswordCell,
-    CrosswordClueDefinition,
-    CrosswordDefinition
+    CrosswordClueDefinition
 } from "crossword-definition";
 /**
  * Represents a clue

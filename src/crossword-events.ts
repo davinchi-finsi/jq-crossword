@@ -1,5 +1,5 @@
 import {
-    CrosswordDefinition
+    CrosswordClueDefinition
 } from "crossword-definition";
 import {CrosswordGame} from "./crossword-game";
 
@@ -22,7 +22,7 @@ export interface CrosswordClueCompleteEvent{
     /**
      * Clue definition
      */
-    definition:CrosswordDefinition;
+    definition:CrosswordClueDefinition;
 }
 export enum CrosswordEvents{
     /**

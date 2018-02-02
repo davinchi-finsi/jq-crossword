@@ -1,7 +1,5 @@
 import {
-    CrosswordCell,
-    CrosswordClueDefinition,
-    CrosswordDefinition
+    CrosswordCell
 } from "crossword-definition";
 import {CrosswordRowRegistry} from "./crossword-row-registry";
 import {CrosswordClueRegistry} from "./crossword-clue-registry";
