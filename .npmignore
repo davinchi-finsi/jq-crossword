@@ -6,6 +6,7 @@ docs/
 node_modules/
 .git
 fuse.js
+rollup.config.js
 gulpfile.js
 package-lock.json
 ### VisualStudioCode template
