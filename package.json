@@ -9,7 +9,8 @@
   "typings": "src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rimraf dist && rollup -c"
+    "build": "rimraf dist && rollup -c",
+    "doc": "rimraf docs & typedoc --mode modules --ignoreCompilerErrors --readme none --exclude **/{index,jquery.crossword}.ts --out docs ./src"
   },
   "repository": {
     "type": "git",
@@ -26,11 +27,13 @@
     "rollup-plugin-license": "^0.5.0",
     "rollup-plugin-typescript": "^0.8.1",
     "rollup-plugin-uglify": "^3.0.0",
+    "typedoc": "^0.10.0",
+    "typedoc-plugin-external-module-name": "^1.0.10",
     "typescript": "^2.6.2",
     "uglify-js": "^3.3.8"
   },
   "dependencies": {
-    "crossword-definition": "git+https://gitlab.com/davinchi/games/crossword-definition.git",
+    "crossword-definition": "^1.0.0",
     "jquery": "^3.3.1",
     "jquery-ui": "^1.12.1"
   }

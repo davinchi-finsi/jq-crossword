@@ -24,10 +24,17 @@
 (function (CrosswordEvents) {
     /**
      * Triggered when a clue is completed
+     * @emits [[CrosswordClueCompleteEvent]]
+     * @example ```
+     * $("someSelector").on("crossword:clue",(e,data)=>{console.log(data)});
+     * ```
      */
     CrosswordEvents[CrosswordEvents["onClueCompleted"] = "crossword:clue"] = "onClueCompleted";
     /**
      * Triggered when the game is solved
+     * @example ```
+     * $("someSelector").on("crossword:solved",(e)=>{console.log("Solved!"});
+     * ```
      */
     CrosswordEvents[CrosswordEvents["onSolved"] = "crossword:solved"] = "onSolved";
 })(exports.CrosswordEvents || (exports.CrosswordEvents = {}));
@@ -120,6 +127,20 @@ var CrosswordGame = (function () {
          */
         this.cluesRegistry = {};
     }
+    /**
+     * Destroy the component
+     */
+    CrosswordGame.prototype.destroy = function () {
+        this.element.removeClass([this.options.classes.disabled, this.options.classes.root]);
+        this.element.off("." + this.options.namespace);
+        this.board.remove();
+        this.acrossCluesContainer.remove();
+        this.acrossCluesList.remove();
+        this.downCluesContainer.remove();
+        this.downCluesList.remove();
+        //@ts-ignore
+        this._super();
+    };
     /**
      * Disable the widget
      */
@@ -825,7 +846,7 @@ var CrosswordGame = (function () {
             result = this.options.createCell.apply(this, arguments);
         }
         else {
-            result = $("<td class=\"" + this.options.classes.cell + "\"></td>");
+            result = $("<td></td>");
         }
         return result;
     };
@@ -1066,6 +1087,7 @@ var CrosswordGame = (function () {
     CrosswordGame.prototype._construct = function () {
         if (this.definition) {
             var definition = this.definition, matrix = definition.matrix, board = this._createBoard(), rowsRegistry = [], crosswordClueRegistry = this.cluesRegistry;
+            this.board = board;
             //for each row of the matrix
             for (var rowIndex = 0, matrixLength = matrix.length; rowIndex < matrixLength; rowIndex++) {
                 var definitions = matrix[rowIndex], rowElement = void 0, 
@@ -1077,7 +1099,7 @@ var CrosswordGame = (function () {
                     //get the definition and create the base element
                     var cellDefinition = definitions[columnIndex], 
                     //create the cell element
-                    cellElement = this._createCell(cellDefinition), 
+                    cellElement = this._createCell(cellDefinition).addClass(this.options.classes.cell), 
                     //create the registry
                     cellRegistry = new CrosswordCellRegistry(), fieldElement = void 0;
                     cellRegistry.rowRegistry = rowRegistry;
@@ -1161,6 +1183,11 @@ var CrosswordGame = (function () {
 }());
 
 $.widget("ui.crossword", CrosswordGame.prototype);
+
+/**
+ * @module jqCrossword
+ * @preferred
+ */ /** */
 
 exports.CrosswordCellRegistry = CrosswordCellRegistry;
 exports.CrosswordClueRegistry = CrosswordClueRegistry;

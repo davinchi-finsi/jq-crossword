@@ -1,0 +1,42 @@
+.c-crossword{
+    &__board {
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+    &__clue {
+        border: 1px solid #999;
+        padding: 0;
+        text-align: center;
+        font-size: 1.5rem;
+        height: 2.8rem;
+        width: 3.125rem;
+        font-family: Arial;
+        vertical-align: middle;
+    }
+    &__clue__field {
+        border: none;
+        height: 100%;
+        width: 100%;
+        text-align: center;
+        font-size: 1.5rem;
+    }
+    &__cell--first-letter {
+        position: relative;
+        &:before {
+            font-size: 0.625rem;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    }
+    &__cell--first-letter-across{
+        &:before{
+            content:attr(data-across);
+        }
+    }
+    &__cell--first-letter-down{
+        &:before{
+            content:attr(data-down);
+        }
+    }
+}

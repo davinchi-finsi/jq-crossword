@@ -1,3 +1,7 @@
+/**
+ * @module jqCrossword
+ * @preferred
+ *//** */
 export * from "./crossword-options";
 export * from "./crossword-events";
 export * from "./crossword-cell-registry";

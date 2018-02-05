@@ -1,3 +1,7 @@
+/**
+ * @module jqCrossword
+ * @preferred
+ *//** */
 //Create the ui widget
 import {CrosswordGame} from "./crossword-game";
 import {CrosswordCellRegistry} from "./crossword-cell-registry";

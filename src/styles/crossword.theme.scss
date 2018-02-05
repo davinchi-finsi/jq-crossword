@@ -1,0 +1,89 @@
+//bg: background-color
+//tc: text-color
+//br: border-color
+@mixin crossword-theme(
+    //Cells with light:true
+    $tc-clue,
+    //Cell clue with focus
+    $bg-clue--active,
+    //Clue correct
+    $tc-clue--correct,
+    $bg-clue--correct,
+    //Clue incorrect
+    $tc-clue--incorrect,
+    $bg-clue--incorrect,
+    //defaults
+    //Cells with light:false
+    $bg-cell:transparent,
+    $br-cell:transparent,
+    //Cells with light:true
+    $bg-clue:$bg-cell,
+    $br-clue:$br-cell,
+    //Cells fields
+    $tc-field:$tc-clue,
+    $bg-field:$bg-clue,
+    //Cell clue with focus
+    $tc-clue--active:$tc-clue,
+    $br-clue--active:$br-clue,
+    $br-clue--correct:$br-clue,
+    $br-clue--incorrect:$br-clue,
+    //list item
+    $tc-list-item:#000,
+    $bg-list-item:transparent,
+    $bg-list-item--active:transparent,
+    //List item active
+    $tc-list-item--active:$tc-list-item,
+    //List item incorrect
+    $tc-list-item--incorrect:$bg-clue--incorrect,
+    $bg-list-item--incorrect:transparent,
+    //List item correct
+    $tc-list-item--correct:$bg-clue--correct,
+    $bg-list-item--correct:transparent
+){
+    .c-crossword__cell{
+        border-color:$br-cell;
+    }
+    .c-crossword__clue {
+        color:$tc-clue;
+        border-color:$br-clue;
+        background-color: $bg-clue;
+        &.c-crossword__clue--active,
+        &.c-crossword__clue--active .c-crossword__clue__field{
+            color:$tc-clue--active;
+            border-color:$br-clue--active;
+            background-color: $bg-clue--active;
+        }
+    }
+    .c-crossword__list-item {
+        color:$tc-list-item;
+        background-color:$bg-list-item;
+        &.c-crossword__clue--active{
+            font-weight: bold;
+            color:$tc-list-item--active;
+            background-color:$bg-list-item--active;
+        }
+    }
+    .c-crossword__clue--incorrect{
+        .c-crossword__clue__field{
+            color: $tc-clue--incorrect;
+            border-color: $br-clue--incorrect;
+            background-color: $bg-clue--incorrect;
+        }
+        &.c-crossword__list-item{
+            color: $tc-list-item--incorrect;
+            background-color: $bg-list-item--incorrect;
+        }
+    }
+    .c-crossword__clue--correct{
+        .c-crossword__clue__field{
+            color: $tc-clue--correct;
+            border-color: $br-clue--correct;
+            background-color: $bg-clue--correct;
+        }
+        &.c-crossword__list-item{
+            text-decoration: line-through;
+            color: $tc-list-item--correct;
+            background-color: $bg-list-item--correct;
+        }
+    }
+}

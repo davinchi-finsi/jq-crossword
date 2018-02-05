@@ -1,3 +1,6 @@
+/**
+ * @module jqCrossword
+ *//** */
 import {
     CrosswordCell,
     CrosswordClueDefinition,
@@ -57,6 +60,10 @@ export class CrosswordGame {
      */
     protected rowsRegistry: CrosswordRowRegistry[];
     /**
+     * Board
+     */
+    protected board:JQuery;
+    /**
      * Container element of the across clues list
      */
     protected acrossCluesContainer: JQuery;
@@ -73,6 +80,20 @@ export class CrosswordGame {
      */
     protected downCluesList: JQuery;
 
+    /**
+     * Destroy the component
+     */
+    destroy(){
+        this.element.removeClass([this.options.classes.disabled,this.options.classes.root]);
+        this.element.off("."+this.options.namespace);
+        this.board.remove();
+        this.acrossCluesContainer.remove();
+        this.acrossCluesList.remove();
+        this.downCluesContainer.remove();
+        this.downCluesList.remove();
+        //@ts-ignore
+        this._super();
+    }
     /**
      * Disable the widget
      */
@@ -826,7 +847,7 @@ export class CrosswordGame {
         if ((typeof this.options.createCell).toLowerCase() == "function") {
             result = this.options.createCell.apply(this, arguments);
         } else {
-            result = $(`<td class="${this.options.classes.cell}"></td>`);
+            result = $(`<td></td>`);
         }
         return result;
     }
@@ -1078,6 +1099,7 @@ export class CrosswordGame {
                 board: JQuery = this._createBoard(),
                 rowsRegistry: CrosswordRowRegistry[] = [],
                 crosswordClueRegistry: { [key: string]: CrosswordClueRegistry } = this.cluesRegistry;
+            this.board = board;
             //for each row of the matrix
             for (let rowIndex = 0, matrixLength = matrix.length; rowIndex < matrixLength; rowIndex++) {
                 let definitions = matrix[rowIndex],
@@ -1092,7 +1114,7 @@ export class CrosswordGame {
                     //get the definition and create the base element
                     let cellDefinition: CrosswordCell = definitions[columnIndex],
                         //create the cell element
-                        cellElement = this._createCell(cellDefinition),
+                        cellElement = this._createCell(cellDefinition).addClass(this.options.classes.cell),
                         //create the registry
                         cellRegistry: CrosswordCellRegistry = new CrosswordCellRegistry(),
                         fieldElement: JQuery;

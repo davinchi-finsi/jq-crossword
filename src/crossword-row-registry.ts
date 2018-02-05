@@ -1,3 +1,6 @@
+/**
+ * @module jqCrossword
+ *//** */
 import {CrosswordCellRegistry} from "./crossword-cell-registry";
 /**
  * Represents a row of the board

@@ -1,3 +1,6 @@
+/**
+ * @module jqCrossword
+ *//** */
 import {
     CrosswordClueDefinition
 } from "crossword-definition";
