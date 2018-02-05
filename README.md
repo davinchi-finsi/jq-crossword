@@ -17,7 +17,7 @@ Extensible crossword game JQuery widget
 or download the [latest release](https://github.com/davinchi-finsi/jq-crossword/releases)
 
 ## Docs
-For more info, please check the [docs](https://davinchi-finsi.github.io/jq-crossword)
+For more info, please check the [docs](https://davinchi-finsi.github.io/jq-crossword/)
 
 ## Playgrond
 [Demo in jsfiddle](https://jsfiddle.net/Haztivity/aykjnv6q/1/?utm_source=website&utm_medium=embed&utm_campaign=aykjnv6q)
