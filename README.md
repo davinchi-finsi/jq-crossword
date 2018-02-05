@@ -100,8 +100,10 @@ Please go to [CrosswordOptions](https://davinchi-finsi.github.io/jq-crossword/in
 
 ### Keyboard navigation
 `jq-crossword` provides keyboard navigation:
-| Key           | Action       |
-| ------------- | -------------|
+
+
+| Key           | Action        |
+| ------------- | ------------- |
 | Up arrow      | Move the focus to the cell above the current cell (if any cell is active and there is a cell above) |
 | Right arrow   | Move the focus to the cell at right of the current cell (if any cell is active and there is a cell at the right) |
 | Down arrow    | Move the focus to the cell below the current cell (if any cell is active and there is a cell below) |
@@ -131,14 +133,14 @@ Available methods to invoke:
 | [destroy](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html#destroy)       | Destroy the widget |
 | [disable](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html#disable)       | Disable the widget |
 | [enable](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html#enable)        | Enable the widget |
-| [goToCell](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html#goToCell)      | Move the focus to a cell |
-| [clearActive](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html#clearActive)   | Clear the focus |
-| [goToCellAbove](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html#goToCellAbove) | Go to the cell above of the current active one |
-| [goToCellBelow](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html#goToCellBelow) | Go to the cell below of the current active one |
-| [goToCellRight](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html#goToCellRight) | Go to the cell at right of the current active one |
-| [goToCellLeft](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html#goToCellLeft)  | Go to the cell at left of the current active one |
-| [goToNextWord](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html#goToNextWord)  | Go to the next word |
-| [goToPrevWord](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html#goToPrevWord)  | Go to the previous word |
-| [checkClue](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html#checkClue)     | Check the answer of a clue |
+| [goToCell](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html#gotocell)      | Move the focus to a cell |
+| [clearActive](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html#clearactive)   | Clear the focus |
+| [goToCellAbove](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html#gotocellabove) | Go to the cell above of the current active one |
+| [goToCellBelow](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html#gotocellbelow) | Go to the cell below of the current active one |
+| [goToCellRight](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html#gotocellright) | Go to the cell at right of the current active one |
+| [goToCellLeft](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html#gotocellleft)  | Go to the cell at left of the current active one |
+| [goToNextWord](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html#gotonextword)  | Go to the next word |
+| [goToPrevWord](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html#gotoprevword)  | Go to the previous word |
+| [checkClue](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html#checkclue)     | Check the answer of a clue |
 | [check](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html#check)         | Check the answers of all the clues |
 | [solve](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html#solve)         | Solve the game |
