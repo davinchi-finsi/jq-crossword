@@ -25,7 +25,9 @@ export default [
             globals:globals
         },
         plugins: [
-            typescript(),
+            typescript({
+                typescript:require("typescript"),
+            }),
             license({
                 banner:banner
             })
@@ -42,7 +44,9 @@ export default [
             globals:globals
         },
         plugins: [
-            typescript(),
+            typescript({
+                typescript:require("typescript"),
+            }),
             uglify(),
             license({
                 banner:banner
