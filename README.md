@@ -1,5 +1,5 @@
 # jq-crossword
-Extensible crossword game JQuery widget
+Extensible crossword game made with JQuery widget
 
 ## Dependencies
 - jquery
@@ -10,7 +10,7 @@ Extensible crossword game JQuery widget
 ## Features
 - Typescript sources
 - Keyboard navigation. See [keyboard navigation](#keyboard-navigation)
-- All the css classes are configurable. See [css classes](ttps://github.com/davinchi-finsi/jq-crossword/interfaces/jqcrossword.crosswordoptions.html#classes)
+- All the css classes are configurable. See [css classes](https://github.com/davinchi-finsi/jq-crossword/interfaces/jqcrossword.crosswordoptions.html#classes)
 - Configurable markup. See [configurable markup](#configurable-markup)
 - Extensible with Widget. See [jquery ui widget docs](http://api.jqueryui.com/jQuery.widget/)
 
@@ -19,15 +19,15 @@ or download the [latest release](https://github.com/davinchi-finsi/jq-crossword/
 ## Docs
 For more info, please check the [docs](https://davinchi-finsi.github.io/jq-crossword/)
 
-## Playgrond
-[Demo in jsfiddle](https://jsfiddle.net/Haztivity/aykjnv6q/1/?utm_source=website&utm_medium=embed&utm_campaign=aykjnv6q)
+## Demo and Playground
+Please go to our [demo in jsfiddle](https://jsfiddle.net/Haztivity/aykjnv6q/1/?utm_source=website&utm_medium=embed&utm_campaign=aykjnv6q)
 
 ## Usage
 `npm i jq-crossword`
 ### Create the definition
 `jq-crossword` uses [crossword-definition](https://github.com/davinchi-finsi/crossword-definition) to handle the model.
 
-**Please note** that the `x` and `y` positions starts from 1 instead of 0, the first cell is in the `x:0` and `y:0`
+**Please note** that the `x` and `y` positions starts from 1 instead of 0, the first cell is in the `x:1` and `y:1` instead of  is in the `x:0` and `y:0`
 ```javascript
 /*
 *To create
@@ -88,6 +88,76 @@ $('.crossword').crossword({
 });
 ```
 
+
+### Import as module
+Typescript:
+```typescript
+import * as $ from "jquery";
+//choose one of the follow options
+//for jquery-ui package
+import "jquery-ui/ui/widget";
+//for jquery-ui-dist package
+import "jquery-ui-dist/jquery-ui";
+import {CrosswordGame} from "jq-crossword";
+$("someSelector").crossword(<CrosswordOptions>{
+    //options
+});
+```
+Vanilla ES2015
+```javascript
+import "jq-snap-puzzle";
+//choose one of the follow options
+//for jquery-ui package
+import "jquery-ui/ui/widget";
+//for jquery-ui-dist package
+import "jquery-ui-dist/jquery-ui";
+import {CrosswordGame} from "jq-crossword";
+$("someSelector").crossword({
+    //options
+});
+```
+**Please note** that depending of the bundler you are using other configurations may be necessary. For example, shimming JQuery and JQuery UI.
+### Traditional way
+```html
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Some Title</title>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    </head>
+    <body>
+        <div class="crossword">
+        <script type="text/javascript">
+            $(".crossword").crossword({
+                //options
+            });
+        </script>
+    </body>
+</html>
+```
+## JQuery ui
+JQuery ui could be included in the projects in many different ways and with different packages, instead
+of force you to use one, we leave up to you how to include it:
+
+### Modularized
+Using `npm i jquery-ui` that install the package allowing to import the widgets you want.
+
+We provided a file with the import of the required dependencies:
+```typescript
+import "jquery-ui/ui/widget";
+```
+
+### dist package
+In npm is available the package [jquery-ui-dist](https://www.npmjs.com/package/jquery-ui-dist). Recommended if you will use the most of the framework.
+
+### Downloading a custom bundle
+Go to the [jquery ui download page](https://jqueryui.com/download) and checks:
+- core
+    - widget
+or use [this configuration](http://jqueryui.com/download/#!version=1.12.1&components=100000000000000000000000000000000000000000000000)
+
 ### Options
 Please go to [CrosswordOptions](https://davinchi-finsi.github.io/jq-crossword/interfaces/jqcrossword.crosswordoptions.html)
 
@@ -98,6 +168,7 @@ Please go to [CrosswordOptions](https://davinchi-finsi.github.io/jq-crossword/in
 |[crossword:clue](https://davinchi-finsi.github.io/jq-crossword/enums/jqcrossword.crosswordevents.html#oncluecompleted)|  Triggered when a clue is completed | [CrosswordClueCompletedEvent](https://davinchi-finsi.github.io/jq-crossword/interfaces/jqcrossword.crosswordcluecompleteevent.html) |
 |[crossword:solved](https://davinchi-finsi.github.io/jq-crossword/enums/jqcrossword.crosswordevents.html#onsolved)    | Triggered when the game is solved   |   |
 
+For more info please go to [docs](https://davinchi-finsi.github.io/jq-crossword/enums/jqcrossword.crosswordevents.html)
 ### Keyboard navigation
 `jq-crossword` provides keyboard navigation:
 
@@ -121,9 +192,51 @@ Please check the [available options](https://davinchi-finsi.github.io/jq-crosswo
 
 ### Append clues list
 By default the clues list are appended to the root element but could be appended in other elements by the options:
-- acrossListAppendTo
-- downListAppendTo
+- [acrossListAppendTo](https://davinchi-finsi.github.io/jq-crossword/interfaces/jqcrossword.crosswordoptions.html#acrosslistappendto)
+- [downListAppendTo](https://davinchi-finsi.github.io/jq-crossword/interfaces/jqcrossword.crosswordoptions.html#downlistappendto)
 
+The options could be a jquery valid selector, a DomElement or a JQuery element
+
+For example:
+```html
+<div class="crossword">
+
+</div>
+<div class="crossword-across-list">
+
+</div>
+```
+```typescript
+$(".crossword").crossword({
+    //another options
+    acrossListAppendTo:".crossword-across-list"
+})
+```
+
+For more info, please go to [docs](https://davinchi-finsi.github.io/jq-crossword/interfaces/jqcrossword.crosswordoptions.html#downlistappendto)
+### List titles
+By default `jq-crossword` generates the titles for the lists in the `createCluesList`,
+this could be override with the option [createCluesListContainer](https://davinchi-finsi.github.io/jq-crossword/interfaces/jqcrossword.crosswordoptions.html#createclueslistcontainer)
+
+For example, use an `h2` tag instead of the default one:
+```typescript
+$(".crossword").crossword({
+    //another options
+    createCluesListContainer:()=>{
+        return $(`<div class="${this.options.classes.cluesListContainer}">
+                      <h2 class="${this.options.classes.cluesListTitle}">
+                      ${
+                          across//if is accross
+                          ? this.options.acrossListTitle //use acrossListTitle
+                          : this.options.downListTitle //otherwise use downListTitle
+                      }
+                      </h2>
+                  </div>`);
+    }
+})
+```
+
+For more info, please go to [docs](https://davinchi-finsi.github.io/jq-crossword/interfaces/jqcrossword.crosswordoptions.html#downlisttitle)
 
 ### Methods
 Available methods to invoke:
@@ -144,3 +257,6 @@ Available methods to invoke:
 | [checkClue](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html#checkclue)     | Check the answer of a clue |
 | [check](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html#check)         | Check the answers of all the clues |
 | [solve](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html#solve)         | Solve the game |
+
+For more info, please go to [docs](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html)
+**Please note** that only public methods are available using `$("selector").crossword("methodName","methodParams");`

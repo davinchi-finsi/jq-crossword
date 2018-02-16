@@ -318,11 +318,11 @@ export class CrosswordGame {
                 }
                 //Add/remove class in each cell for the global result of the clue. If the clue answer is incorrect, all the cells will have the clueIncorrect class
                 clueRegistry.isCorrect = correct == cellRegistries.length;
-                this.updateClueStateClass(clueRegistry);
+                this._updateClueStateClass(clueRegistry);
                 result = clueRegistry.isCorrect;
             } else {//if the clue is not completed, remove the state
                 clueRegistry.isCorrect = false;
-                this.updateClueStateClass(clueRegistry);
+                this._updateClueStateClass(clueRegistry);
                 //if changes the state
             }
             if (prevCompleted != clueRegistry.isCompleted) {
@@ -467,7 +467,7 @@ export class CrosswordGame {
      * Update the css classes for the clueRegistry depending if is correct or incorrect
      * @param {CrosswordClueRegistry} clueRegistry
      */
-    protected updateClueStateClass(clueRegistry: CrosswordClueRegistry) {
+    protected _updateClueStateClass(clueRegistry: CrosswordClueRegistry) {
         if (clueRegistry.isCompleted) {
             let clueClassToAdd = clueRegistry.isCorrect
                 ? this.options.classes.clueCorrect

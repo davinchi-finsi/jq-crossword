@@ -18,7 +18,7 @@ export enum CrosswordFeedback{
     clue="clue"
 }
 /**
- * Parameters for the plugin
+ * Options for the plugin
  */
 export interface CrosswordOptions {
     /**
@@ -174,13 +174,15 @@ export interface CrosswordOptions {
     feedback?:CrosswordFeedback;
     /**
      * Override the default creation of the board
-     * @example ```$(".crossword").crossword({
+     * @example ```typescript
+     *$(".crossword").crossword({
      *      definition:definition,
      *      createBoard:()=>{
      *          return $(`<div class="my-custom-board"></div>`);
      *      }
      * })```
      * @returns {JQuery}
+     * @see [[CrosswordGame._createBoard]]
      */
     createBoard?(): JQuery;
 
@@ -188,12 +190,14 @@ export interface CrosswordOptions {
      * Override the default creation of the row
      * @param {number} rowIndex
      * @returns {JQuery}
-     * @example ```$(".crossword").crossword({
+     * @example ```typescript
+     *$(".crossword").crossword({
      *      definition:definition,
      *      createRow:(rowIndex)=>{
      *          return $(`<div class="my-custom-row my-custom-row--${rowIndex}"></div>`);
      *      }
      * })```
+     * @see [[CrosswordGame._createRow]]
      */
     createRow?(rowIndex: number): JQuery;
 
@@ -202,24 +206,28 @@ export interface CrosswordOptions {
      * Please note that jq-crossword requires some classes and attributes to work, those could not be override
      * @param {CrosswordCell} definition
      * @returns {JQuery}
-     * @example ```$(".crossword").crossword({
+     * @example ```typescript
+     *$(".crossword").crossword({
      *      definition:definition,
      *      createCell:(definition)=>{
      *          return $(`<div class="my-custom-cell" data-x="${definition.x}" data-y="${definition.y}"></div>`);
      *      }
      * })```
+     * @see [[CrosswordGame._createCell]]
      */
     createCell?(definition: CrosswordCell): JQuery;
 
     /**
      * Override the default creation of the field of a cell
      * @param {} definition
-     * @example ```$(".crossword").crossword({
+     * @example ```typescript
+     *$(".crossword").crossword({
      *      definition:definition,
      *      createCellField:(definition)=>{
      *          return $(`<input class="my-custom-field">`);
      *      }
      * })```
+     * @see [[CrosswordGame._createCellField]]
      */
     createCellField?(definition: CrosswordCell): JQuery;
 
@@ -228,12 +236,14 @@ export interface CrosswordOptions {
      * This element is optional.
      * @param {boolean} across
      * @returns {JQuery}
-     * @example ```$(".crossword").crossword({
+     * @example ```typescript
+     *$(".crossword").crossword({
      *      definition:definition,
      *      createCluesListContainer:(definition)=>{
      *          return $(`<div class="my-custom-create-clues-list-container"></div>`);
      *      }
      * })```
+     * @see [[CrosswordGame._createCluesListContainer]]
      */
     createCluesListContainer?(across: boolean): JQuery;
 
@@ -241,12 +251,14 @@ export interface CrosswordOptions {
      * Override the default creation of a list of clues
      * @param {boolean} across
      * @returns {JQuery}
-     * @example ```$(".crossword").crossword({
+     * @example ```typescript
+     *$(".crossword").crossword({
      *      definition:definition,
      *      createCluesListContainer:(definition)=>{
      *          return $(`<ul class="my-custom-create-clues-list"></ul>`);
      *      }
      * })```
+     * @see [[CrosswordGame._createCluesList]]
      */
     createCluesList?(across: boolean): JQuery;
 
@@ -254,12 +266,14 @@ export interface CrosswordOptions {
      * Override the default creation of a clues list item
      * @param {CrosswordClueDefinition} definition
      * @returns {JQuery}
-     * @example ```$(".crossword").crossword({
+     * @example ```typescript
+     *$(".crossword").crossword({
      *      definition:definition,
      *      createCluesListItem:(definition)=>{
      *          return $(`<li class="my-custom-create-clues-list-item"></li>`);
      *      }
      * })```
+     * @see [[CrosswordGame._createCluesListItem]]
      */
     createCluesListItem?(definition: CrosswordClueDefinition): JQuery;
 

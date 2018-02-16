@@ -1,6 +1,12 @@
 /**
+ * jqCrossword module.
+ *
  * @module jqCrossword
  * @preferred
+ * @example For browser usage, all the members are available using the namespace `jqCrossword`
+ * ```typescript
+ * jqCrossword.CrosswordGame
+ * ```
  *//** */
 export * from "./crossword-options";
 export * from "./crossword-events";
