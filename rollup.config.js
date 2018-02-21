@@ -1,8 +1,8 @@
-import typescript from 'rollup-plugin-typescript';
-import uglify from 'rollup-plugin-uglify';
-import uglifyEs from "rollup-plugin-uglify-es";
-import license from 'rollup-plugin-license';
-import camelCase from "lodash.camelCase";
+const typescript = require('rollup-plugin-typescript');
+const uglify = require('rollup-plugin-uglify');
+const uglifyEs = require("rollup-plugin-uglify-es");
+const license = require('rollup-plugin-license');
+const camelCase=  require("lodash.camelCase");
 const banner=`@license <%= pkg.name %> v<%= pkg.version %>
 (c) <%= moment().format('YYYY') %> Finsi, Inc.
 `,
@@ -10,11 +10,11 @@ const banner=`@license <%= pkg.name %> v<%= pkg.version %>
     fileName=name,
     packageName =camelCase(name.replace("jquery","jq")),
     src = "./src/index.ts",
-    external=["jquery","crossword-definition"],
+    external=(id)=>id.indexOf("node_modules")!=-1,
     globals= {
         jquery: '$'
     };
-export default [
+module.exports= [
     {
         input: src,
         output: {
@@ -92,4 +92,4 @@ export default [
         ],
         external:external
     }
-]
+];

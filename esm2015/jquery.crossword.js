@@ -3,24 +3,21 @@
  * (c) 2018 Finsi, Inc.
  */
 
-(function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('crossword-definition')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'crossword-definition'], factory) :
-	(factory((global.$ = global.$ || {}, global.$.crossword = {}),global.crosswordDefinition));
-}(this, (function (exports,crosswordDefinition) { 'use strict';
+import { CrosswordDefinition } from 'crossword-definition';
 
 /**
  * Available feedback options
  */
-
+var CrosswordFeedback;
 (function (CrosswordFeedback) {
     /**
      * Show feedback when all the letters of a clue has been provided
      * @type {string}
      */
     CrosswordFeedback["clue"] = "clue";
-})(exports.CrosswordFeedback || (exports.CrosswordFeedback = {}));
+})(CrosswordFeedback || (CrosswordFeedback = {}));
 
+var CrosswordEvents;
 (function (CrosswordEvents) {
     /**
      * Triggered when a clue is completed
@@ -37,19 +34,16 @@
      * ```
      */
     CrosswordEvents["onSolved"] = "crossword:solved";
-})(exports.CrosswordEvents || (exports.CrosswordEvents = {}));
+})(CrosswordEvents || (CrosswordEvents = {}));
 
 /**
  * Represents a cell
  */
-var CrosswordCellRegistry = /** @class */ (function () {
-    function CrosswordCellRegistry() {
-    }
-    return CrosswordCellRegistry;
-}());
+class CrosswordCellRegistry {
+}
 
-var CrosswordClueRegistry = /** @class */ (function () {
-    function CrosswordClueRegistry() {
+class CrosswordClueRegistry {
+    constructor() {
         /**
          * The jquery elements of the cells with letters of the clue. Is an js array not a Jquery object
          * @type {any[]}
@@ -76,45 +70,33 @@ var CrosswordClueRegistry = /** @class */ (function () {
          */
         this.isCompleted = false;
     }
-    Object.defineProperty(CrosswordClueRegistry.prototype, "cellsAsJquery", {
-        /**
-         * Get the cells as jquery element
-         * @returns {any}
-         */
-        get: function () {
-            if (!this._$cells) {
-                this._$cells = $($.map(this.cellsElements, function (val) { return val.get(0); }));
-            }
-            return this._$cells;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(CrosswordClueRegistry.prototype, "fieldsAsJquery", {
-        /**
-         * Get the fields as a jquery element
-         * @returns {any}
-         */
-        get: function () {
-            if (!this._$fields) {
-                this._$fields = $($.map(this.fieldsElements, function (val) { return val.get(0); }));
-            }
-            return this._$fields;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return CrosswordClueRegistry;
-}());
+    /**
+     * Get the cells as jquery element
+     * @returns {any}
+     */
+    get cellsAsJquery() {
+        if (!this._$cells) {
+            this._$cells = $($.map(this.cellsElements, (val) => val.get(0)));
+        }
+        return this._$cells;
+    }
+    /**
+     * Get the fields as a jquery element
+     * @returns {any}
+     */
+    get fieldsAsJquery() {
+        if (!this._$fields) {
+            this._$fields = $($.map(this.fieldsElements, (val) => val.get(0)));
+        }
+        return this._$fields;
+    }
+}
 
 /**
  * Represents a row of the board
  */
-var CrosswordRowRegistry = /** @class */ (function () {
-    function CrosswordRowRegistry() {
-    }
-    return CrosswordRowRegistry;
-}());
+class CrosswordRowRegistry {
+}
 
 /**
  * @module jqCrossword
@@ -122,8 +104,8 @@ var CrosswordRowRegistry = /** @class */ (function () {
 /**
  * Crossword game
  */
-var CrosswordGame = /** @class */ (function () {
-    function CrosswordGame() {
+class CrosswordGame {
+    constructor() {
         /**
          * Registry of the clues.
          * The key is the number of the clue
@@ -133,7 +115,7 @@ var CrosswordGame = /** @class */ (function () {
     /**
      * Destroy the component
      */
-    CrosswordGame.prototype.destroy = function () {
+    destroy() {
         this.element.removeClass([this.options.classes.disabled, this.options.classes.root]);
         this.element.off("." + this.options.namespace);
         this.board.remove();
@@ -143,33 +125,33 @@ var CrosswordGame = /** @class */ (function () {
         this.downCluesList.remove();
         //@ts-ignore
         this._super();
-    };
+    }
     /**
      * Disable the widget
      */
-    CrosswordGame.prototype.disable = function () {
+    disable() {
         //@ts-ignore
         this._super();
         this.element.addClass(this.options.classes.disabled);
-        var cluesRegistry = this.cluesRegistry;
-        for (var clueCode in cluesRegistry) {
-            var clueRegistry = cluesRegistry[clueCode];
+        const cluesRegistry = this.cluesRegistry;
+        for (let clueCode in cluesRegistry) {
+            const clueRegistry = cluesRegistry[clueCode];
             clueRegistry.fieldsAsJquery.prop("disabled", true);
         }
-    };
+    }
     /**
      * Enable the widget
      */
-    CrosswordGame.prototype.enable = function () {
+    enable() {
         //@ts-ignore
         this._super();
         this.element.removeClass(this.options.classes.disabled);
-        var cluesRegistry = this.cluesRegistry;
-        for (var clueCode in cluesRegistry) {
-            var clueRegistry = cluesRegistry[clueCode];
+        const cluesRegistry = this.cluesRegistry;
+        for (let clueCode in cluesRegistry) {
+            const clueRegistry = cluesRegistry[clueCode];
             clueRegistry.fieldsAsJquery.prop("disabled", false);
         }
-    };
+    }
     /**
      * Move the cursor to a cell. Also activates the related clue.
      * If the cell has one clue, the focus will be to the active clue or to the clue related to the cell
@@ -180,10 +162,10 @@ var CrosswordGame = /** @class */ (function () {
      * @param [x]       The x position of the cell. Required if yOrCell is a number
      * @return {CrossCellRegistry}  The activated cell regitry
      */
-    CrosswordGame.prototype.goToCell = function (yOrCell, x) {
-        var cell, cellDefinition, definition;
+    goToCell(yOrCell, x) {
+        let cell, cellDefinition, definition;
         if ((typeof yOrCell).toLowerCase() == "number") {
-            var rowRegistry = this.rowsRegistry[yOrCell];
+            let rowRegistry = this.rowsRegistry[yOrCell];
             //check if the coords are valid
             if (rowRegistry) {
                 cell = rowRegistry.cellsRegistry[x];
@@ -231,81 +213,81 @@ var CrosswordGame = /** @class */ (function () {
             }
         }
         return cell;
-    };
+    }
     /**
      * Clear the active state
      */
-    CrosswordGame.prototype.clearActive = function () {
+    clearActive() {
         if (this.registryActive) {
             this.registryActive = null;
             this.element.find("." + this.options.classes.clueActive).removeClass(this.options.classes.clueActive);
             this.registryCellActive.element.removeClass(this.options.classes.cellActive);
             this.registryCellActive = null;
         }
-    };
+    }
     /**
      * Moves the focus to the cell above the current one
      * @private
      */
-    CrosswordGame.prototype.goToCellAbove = function () {
+    goToCellAbove() {
         if (this.registryCellActive) {
-            var target = this._getCellFor(this.registryCellActive, true, false);
+            let target = this._getCellFor(this.registryCellActive, true, false);
             if (target) {
                 this.goToCell(target);
             }
         }
-    };
+    }
     /**
      * Moves the focus to the cell below the current one
      */
-    CrosswordGame.prototype.goToCellBelow = function () {
+    goToCellBelow() {
         if (this.registryCellActive) {
-            var target = this._getCellFor(this.registryCellActive, true, true);
+            let target = this._getCellFor(this.registryCellActive, true, true);
             if (target) {
                 this.goToCell(target);
             }
         }
-    };
+    }
     /**
      * Moves the focus to the cell at the right side of the current one
      */
-    CrosswordGame.prototype.goToCellRight = function () {
+    goToCellRight() {
         if (this.registryCellActive) {
-            var target = this._getCellFor(this.registryCellActive, false, true);
+            let target = this._getCellFor(this.registryCellActive, false, true);
             if (target) {
                 this.goToCell(target);
             }
         }
-    };
+    }
     /**
      * Moves the focus to the cell at the left side of the current one
      */
-    CrosswordGame.prototype.goToCellLeft = function () {
+    goToCellLeft() {
         if (this.registryCellActive) {
-            var target = this._getCellFor(this.registryCellActive, false, false);
+            let target = this._getCellFor(this.registryCellActive, false, false);
             if (target) {
                 this.goToCell(target);
             }
         }
-    };
+    }
     /**
      * Go to the next word from the current one
      */
-    CrosswordGame.prototype.goToNextWord = function () {
+    goToNextWord() {
         if (this.registryCellActive) {
-            var target = this._getNextOrPrevClueFrom(this.registryCellActive, true);
+            let target = this._getNextOrPrevClueFrom(this.registryCellActive, true);
             this.cluesRegistry[target.code].fieldsElements[0].trigger("focus");
         }
-    };
+    }
     /**
      * Go to the previous word from the current one
      */
-    CrosswordGame.prototype.goToPrevWord = function () {
+    goToPrevWord() {
         if (this.registryCellActive) {
-            var target = this._getNextOrPrevClueFrom(this.registryCellActive, false);
+            let target = this._getNextOrPrevClueFrom(this.registryCellActive, false);
             this.cluesRegistry[target.code].fieldsElements[0].trigger("focus");
         }
-    };
+    }
     /**
      * Check if a cell is correct
      * @param {CrosswordCellRegistry} [cellRegistry] Cell to check. If is not provided, the active cell will be checked
@@ -331,19 +313,18 @@ var CrosswordGame = /** @class */ (function () {
      * @param {CrosswordClueRegistry} [clueRegistry] Clue to check. If is not provided, the active cell will be checked
      * @returns {boolean}
      */
-    CrosswordGame.prototype.checkClue = function (clueRegistry) {
-        var result;
+    checkClue(clueRegistry) {
+        let result;
         clueRegistry = clueRegistry || this.registryActive;
         //check the clue only if all the letters has been provided
         if (clueRegistry) {
-            var prevCompleted = clueRegistry.isCompleted;
+            const prevCompleted = clueRegistry.isCompleted;
             clueRegistry.isCompleted = clueRegistry.currentAnswer.join("").length === clueRegistry.definition.answer.length;
             if (clueRegistry.isCompleted) {
-                var correct = 0;
-                var cellRegistries = clueRegistry.cellsRegistries;
+                let correct = 0;
+                const cellRegistries = clueRegistry.cellsRegistries;
                 //for each cell
-                for (var _i = 0, cellRegistries_1 = cellRegistries; _i < cellRegistries_1.length; _i++) {
-                    var registry = cellRegistries_1[_i];
+                for (let registry of cellRegistries) {
                     // let classToAdd,
                     //     classToRemove;
                     //check the cell
@@ -371,7 +352,7 @@ var CrosswordGame = /** @class */ (function () {
                 //if changes the state
             }
             if (prevCompleted != clueRegistry.isCompleted) {
-                this.element.trigger(exports.CrosswordEvents.onClueCompleted, [
+                this.element.trigger(CrosswordEvents.onClueCompleted, [
                     {
                         instance: this,
                         isCorrect: clueRegistry.isCorrect,
@@ -382,44 +363,43 @@ var CrosswordGame = /** @class */ (function () {
             }
         }
         return result;
-    };
+    }
     /**
      * Check if the game has been solved
      */
-    CrosswordGame.prototype.check = function () {
-        var cluesRegistry = this.cluesRegistry;
-        var correct = 0;
-        for (var clueCode in cluesRegistry) {
-            var clueRegistry = cluesRegistry[clueCode];
+    check() {
+        const cluesRegistry = this.cluesRegistry;
+        let correct = 0;
+        for (let clueCode in cluesRegistry) {
+            const clueRegistry = cluesRegistry[clueCode];
             if (!clueRegistry.isCorrect) {
                 break;
             }
             correct++;
         }
         if (correct == Object.keys(cluesRegistry).length) {
-            this.element.trigger(exports.CrosswordEvents.onSolved, [this]);
+            this.element.trigger(CrosswordEvents.onSolved, [this]);
         }
-    };
+    }
     /**
      * Resolve the game
      */
-    CrosswordGame.prototype.solve = function () {
-        var cluesRegistry = this.cluesRegistry;
-        for (var clueCode in cluesRegistry) {
-            var clueRegistry = cluesRegistry[clueCode], cellsRegistries = clueRegistry.cellsRegistries;
-            for (var _i = 0, cellsRegistries_1 = cellsRegistries; _i < cellsRegistries_1.length; _i++) {
-                var cellRegistry = cellsRegistries_1[_i];
+    solve() {
+        const cluesRegistry = this.cluesRegistry;
+        for (let clueCode in cluesRegistry) {
+            const clueRegistry = cluesRegistry[clueCode], cellsRegistries = clueRegistry.cellsRegistries;
+            for (let cellRegistry of cellsRegistries) {
                 cellRegistry.field.val(cellRegistry.definition.answer);
             }
         }
-        this.element.trigger(exports.CrosswordEvents.onSolved, [this]);
-    };
+        this.element.trigger(CrosswordEvents.onSolved, [this]);
+    }
     /**
      * JQuery ui function to get the default options
      * @private
      */
-    CrosswordGame.prototype._getCreateOptions = function () {
-        var options = {
+    _getCreateOptions() {
+        let options = {
             namespace: "jq-crossword",
             classes: {
                 root: "c-crossword",
@@ -448,17 +428,17 @@ var CrosswordGame = /** @class */ (function () {
             downListTitle: "Down clues",
             acrossListTitle: "Across clues",
             ignoreCase: true,
-            feedback: exports.CrosswordFeedback.clue
+            feedback: CrosswordFeedback.clue
         };
         return options;
-    };
+    }
     /**
      * Check if
      * @param {CrosswordCellRegistry} cellRegistry
      * @returns {boolean | undefined}
      * @private
      */
-    CrosswordGame.prototype._checkCellAnswer = function (cellRegistry) {
+    _checkCellAnswer(cellRegistry) {
         if (cellRegistry.field.val()) {
             if (this.options.ignoreCase) {
                 cellRegistry.isCorrect = new RegExp(cellRegistry.definition.answer, "i").test(cellRegistry.currentAnswer);
@@ -468,13 +448,13 @@ var CrosswordGame = /** @class */ (function () {
             }
         }
         return cellRegistry.isCorrect;
-    };
+    }
     /**
      * JQuery ui widget constructor
      * @constructor
      * @private
      */
-    CrosswordGame.prototype._create = function () {
+    _create() {
         this.element.addClass(this.options.classes.root);
         this._createDefinition();
         this.cluesRegistry = this._createClueRegistry();
@@ -484,25 +464,25 @@ var CrosswordGame = /** @class */ (function () {
         //use or create model
         //create markup from model
         //assign events
-    };
+    }
     /**
      * Register the events
      * @private
      */
-    CrosswordGame.prototype._addEvents = function () {
-        this.element.on("focus." + this.options.namespace, "." + this.options.classes.field, this._onFieldFocus.bind(this));
-        this.element.on("blur." + this.options.namespace, "." + this.options.classes.field, this._onFieldBlur.bind(this));
-        this.element.on("input." + this.options.namespace, "." + this.options.classes.field, this._onFieldChange.bind(this));
-        this.element.on("keydown." + this.options.namespace, "." + this.options.classes.field, this._onFieldKey.bind(this));
-        this.element.on("click." + this.options.namespace, "." + this.options.classes.listItem, this._onListItemClick.bind(this));
-    };
+    _addEvents() {
+        this.element.on(`focus.${this.options.namespace}`, "." + this.options.classes.field, this._onFieldFocus.bind(this));
+        this.element.on(`blur.${this.options.namespace}`, "." + this.options.classes.field, this._onFieldBlur.bind(this));
+        this.element.on(`input.${this.options.namespace}`, "." + this.options.classes.field, this._onFieldChange.bind(this));
+        this.element.on(`keydown.${this.options.namespace}`, "." + this.options.classes.field, this._onFieldKey.bind(this));
+        this.element.on(`click.${this.options.namespace}`, "." + this.options.classes.listItem, this._onListItemClick.bind(this));
+    }
     /**
      * Update the css classes for the clueRegistry depending if is correct or incorrect
      * @param {CrosswordClueRegistry} clueRegistry
      */
-    CrosswordGame.prototype._updateClueStateClass = function (clueRegistry) {
+    _updateClueStateClass(clueRegistry) {
         if (clueRegistry.isCompleted) {
-            var clueClassToAdd = clueRegistry.isCorrect
+            let clueClassToAdd = clueRegistry.isCorrect
                 ? this.options.classes.clueCorrect
                 : this.options.classes.clueIncorrect, clueClassToRemove = !clueRegistry.isCorrect
                 ? this.options.classes.clueCorrect
@@ -514,9 +494,8 @@ var CrosswordGame = /** @class */ (function () {
         }
         else {
             //for those cells with the both clues, if any of the clues is completed, preserve the class
-            var cellsRegistries = clueRegistry.cellsRegistries;
-            for (var _i = 0, cellsRegistries_2 = cellsRegistries; _i < cellsRegistries_2.length; _i++) {
-                var cellRegistry = cellsRegistries_2[_i];
+            const cellsRegistries = clueRegistry.cellsRegistries;
+            for (let cellRegistry of cellsRegistries) {
                 if (!cellRegistry.acrossClueRegistry || !cellRegistry.downClueRegistry || (!cellRegistry.acrossClueRegistry.isCompleted && !cellRegistry.downClueRegistry.isCompleted)) {
                     cellRegistry.element.removeClass([
                         this.options.classes.clueCorrect,
@@ -526,17 +505,17 @@ var CrosswordGame = /** @class */ (function () {
             }
             clueRegistry.listItem.removeClass([this.options.classes.clueCorrect, this.options.classes.clueIncorrect]);
         }
-    };
+    }
     /**
      * Invoked when a item of the clues list is clicked.
      * Enables the clue and navigates to the first cell
      * @param e
      * @private
      */
-    CrosswordGame.prototype._onListItemClick = function (e) {
+    _onListItemClick(e) {
         if (!this.options.disabled) {
             this.interaction = true;
-            var $target = $(e.target), downCode = $target.data("down"), acrossCode = $target.data("across"), registry = void 0;
+            let $target = $(e.target), downCode = $target.data("down"), acrossCode = $target.data("across"), registry;
             if (downCode) {
                 registry = this.cluesRegistry[downCode].cellsRegistries[0];
             }
@@ -549,7 +528,7 @@ var CrosswordGame = /** @class */ (function () {
         else {
             e.preventDefault();
         }
-    };
+    }
     /**
      * Get the definition for a clue based on the position of the letter.
      * If the cell has across and down definitions, returns the definition for which the cell is closest to the first letter
@@ -558,8 +537,8 @@ var CrosswordGame = /** @class */ (function () {
      * @returns {any}
      * @private
      */
-    CrosswordGame.prototype._getDefinitionForClosestToFirstLetter = function (cell) {
-        var result;
+    _getDefinitionForClosestToFirstLetter(cell) {
+        let result;
         //if there are two clues
         if (cell.acrossClue && cell.downClue) {
             //get the clue for which the cell is closest to the first letter
@@ -574,57 +553,57 @@ var CrosswordGame = /** @class */ (function () {
             result = cell.acrossClue || cell.downClue;
         }
         return result;
-    };
+    }
     /**
      * Invoked when a field receives focus. Goes to the cell
      * @param e
      * @private
      */
-    CrosswordGame.prototype._onFieldFocus = function (e) {
+    _onFieldFocus(e) {
         if (!this.options.disabled) {
             this.interaction = true;
-            var $target = $(e.target), $cell = $target.parents("." + this.options.classes.cell).first();
-            var x = $cell.data("x"), y = $cell.data("y");
+            let $target = $(e.target), $cell = $target.parents("." + this.options.classes.cell).first();
+            let x = $cell.data("x"), y = $cell.data("y");
             this.goToCell(y, x);
             this.interaction = false;
         }
         else {
             e.preventDefault();
         }
-    };
+    }
     /**
      * Invoked when a field lose focus.
      * Clear the active clue and cell
      * @param e
      * @private
      */
-    CrosswordGame.prototype._onFieldBlur = function (e) {
+    _onFieldBlur(e) {
         if (!this.interaction) {
             this.clearActive();
         }
-    };
+    }
     /**
      * Store and check the answer in a cell
      * @param {string} val
      * @param {CrosswordCellRegistry} cellRegistry
      * @private
      */
-    CrosswordGame.prototype._storeAndCheckAnswer = function (val, cellRegistry) {
+    _storeAndCheckAnswer(val, cellRegistry) {
         //store the value
         cellRegistry.currentAnswer = val;
         //store the value in the across clue if exists
         if (cellRegistry.definition.acrossClue) {
-            var registry = this.cluesRegistry[cellRegistry.definition.acrossClue.code], index = cellRegistry.definition.acrossClueLetterIndex;
+            let registry = this.cluesRegistry[cellRegistry.definition.acrossClue.code], index = cellRegistry.definition.acrossClueLetterIndex;
             registry.currentAnswer[index] = val;
-            if (this.options.feedback === exports.CrosswordFeedback.clue) {
+            if (this.options.feedback === CrosswordFeedback.clue) {
                 this.checkClue(registry);
             }
         }
         //store the value in the down clue if exists
         if (cellRegistry.definition.downClue) {
-            var registry = this.cluesRegistry[cellRegistry.definition.downClue.code], index = cellRegistry.definition.downClueLetterIndex;
+            let registry = this.cluesRegistry[cellRegistry.definition.downClue.code], index = cellRegistry.definition.downClueLetterIndex;
             registry.currentAnswer[index] = val;
-            if (this.options.feedback === exports.CrosswordFeedback.clue) {
+            if (this.options.feedback === CrosswordFeedback.clue) {
                 this.checkClue(registry);
             }
         }
@@ -632,22 +611,22 @@ var CrosswordGame = /** @class */ (function () {
         /*if(this.options.feedback == CrosswordFeedback.cell){
             this.checkCell();
         }*/
-    };
+    }
     /**
      * Invoked when the field changes. Moves the focus to the next cell
      * @param e
      * @private
      */
-    CrosswordGame.prototype._onFieldChange = function (e) {
+    _onFieldChange(e) {
         if (!this.options.disabled) {
             this.interaction = true;
-            var val = this.registryCellActive.field.val();
+            let val = this.registryCellActive.field.val();
             //check the answer
             //go to the next cell
             //check if there is an active registry
             if (!this.registryActive) {
-                var $target = $(e.target), $cell = $target.parents("." + this.options.classes.cell).first();
-                var x = $cell.data("x"), y = $cell.data("y");
+                let $target = $(e.target), $cell = $target.parents("." + this.options.classes.cell).first();
+                let x = $cell.data("x"), y = $cell.data("y");
                 this.goToCell(y, x);
             }
             this._storeAndCheckAnswer(val, this.registryCellActive);
@@ -672,21 +651,21 @@ var CrosswordGame = /** @class */ (function () {
         else {
             e.preventDefault();
         }
-    };
+    }
     /**
      * Activate a clue. Store the activated clue in registryActive
      * @param {CrosswordClueDefinition} clue    Registry of the clue to activate
      * @private
      */
-    CrosswordGame.prototype._activateClue = function (clue) {
-        var registry = this.cluesRegistry[clue.code];
+    _activateClue(clue) {
+        let registry = this.cluesRegistry[clue.code];
         if (registry && registry != this.registryActive) {
             this.registryActive = registry;
             this.element.find("." + this.options.classes.clueActive).removeClass(this.options.classes.clueActive);
             registry.cellsAsJquery.addClass(this.options.classes.clueActive);
             registry.listItem.addClass(this.options.classes.clueActive);
         }
-    };
+    }
     /**
      * Get the next or prev clue related to a registry
      * @param {CrosswordCellRegistry} cellRegistry
@@ -694,10 +673,10 @@ var CrosswordGame = /** @class */ (function () {
      * @returns {any}
      * @private
      */
-    CrosswordGame.prototype._getNextOrPrevClueFrom = function (cellRegistry, next) {
-        var cellDefinition = cellRegistry.definition, result, across, definition, useClues, alterClues, index;
+    _getNextOrPrevClueFrom(cellRegistry, next) {
+        let cellDefinition = cellRegistry.definition, result, across, definition, useClues, alterClues, index;
         if (cellDefinition.acrossClue && cellDefinition.downClue) {
-            var closestDefinition = this._getDefinitionForClosestToFirstLetter(cellRegistry.definition);
+            let closestDefinition = this._getDefinitionForClosestToFirstLetter(cellRegistry.definition);
             across = closestDefinition.across;
             definition = closestDefinition;
             //look for which one the letter is the first
@@ -710,10 +689,10 @@ var CrosswordGame = /** @class */ (function () {
         }
         useClues = across ? cellDefinition.crossword.acrossClues : cellDefinition.crossword.downClues;
         alterClues = across ? cellDefinition.crossword.downClues : cellDefinition.crossword.acrossClues;
-        index = useClues.findIndex(function (cell) { return cell.number === definition.number; });
+        index = useClues.findIndex((cell) => cell.number === definition.number);
         if (index != -1) {
             index += next ? 1 : -1;
-            var targetClue = void 0;
+            let targetClue;
             //check if the target index is valid
             if ((next && index < useClues.length) || (!next && index >= 0)) {
                 targetClue = useClues[index];
@@ -726,7 +705,7 @@ var CrosswordGame = /** @class */ (function () {
             result = targetClue;
         }
         return result;
-    };
+    }
     /**
      * Get the cell registry related to an other registry
      * @param {CrosswordCellRegistry} cell  Registry related
@@ -736,11 +715,11 @@ var CrosswordGame = /** @class */ (function () {
      * @private
      * @example _getCellFor(someCell,true,false);//will look in vertical by decrease, the result is the cell above the registry passed to the function
      */
-    CrosswordGame.prototype._getCellFor = function (cell, vertical, increase) {
-        var result, definition = cell.definition, x = definition.x, y = definition.y, yTarget = vertical ? (increase ? y + 1 : y - 1) : y, xTarget = vertical ? x : (increase ? x + 1 : x - 1), targetRow = this.rowsRegistry[yTarget];
+    _getCellFor(cell, vertical, increase) {
+        let result, definition = cell.definition, x = definition.x, y = definition.y, yTarget = vertical ? (increase ? y + 1 : y - 1) : y, xTarget = vertical ? x : (increase ? x + 1 : x - 1), targetRow = this.rowsRegistry[yTarget];
         //if row exists
         if (targetRow) {
-            var targetCell = targetRow.cellsRegistry[xTarget];
+            let targetCell = targetRow.cellsRegistry[xTarget];
             //check if is light
             if (targetCell && targetCell.definition.light) {
                 //if is a hint, look for the next available
@@ -753,17 +732,17 @@ var CrosswordGame = /** @class */ (function () {
             }
         }
         return result;
-    };
+    }
     /**
      * Invoked when a key is pressed
      * @param e
      * @private
      */
-    CrosswordGame.prototype._onFieldKey = function (e) {
+    _onFieldKey(e) {
         if (!this.options.disabled) {
             this.interaction = true;
-            var $target = $(e.target), $cell = $target.parents("." + this.options.classes.cell).first();
-            var x = $cell.data("x"), y = $cell.data("y"), cell = this.rowsRegistry[y].cellsRegistry[x];
+            let $target = $(e.target), $cell = $target.parents("." + this.options.classes.cell).first();
+            let x = $cell.data("x"), y = $cell.data("y"), cell = this.rowsRegistry[y].cellsRegistry[x];
             switch (e.which) {
                 case $.ui.keyCode.SPACE:
                     e.preventDefault();
@@ -807,7 +786,7 @@ var CrosswordGame = /** @class */ (function () {
         else {
             e.preventDefault();
         }
-    };
+    }
     /**
      * Create the main element for the board
      * By default is a table
@@ -815,16 +794,16 @@ var CrosswordGame = /** @class */ (function () {
      * @returns {JQuery}
      * @private
      */
-    CrosswordGame.prototype._createBoard = function () {
-        var result;
+    _createBoard() {
+        let result;
         if ((typeof this.options.createBoard).toLowerCase() == "function") {
             result = this.options.createBoard.apply(this, arguments);
         }
         else {
-            result = $("<table class=\"" + this.options.classes.board + "\"></table>");
+            result = $(`<table class="${this.options.classes.board}"></table>`);
         }
         return result;
-    };
+    }
     /**
      * Create a row of the board.
      * By default is a tr
@@ -834,16 +813,16 @@ var CrosswordGame = /** @class */ (function () {
      * @returns {JQuery}
      * @private
      */
-    CrosswordGame.prototype._createRow = function (rowIndex) {
-        var result;
+    _createRow(rowIndex) {
+        let result;
         if ((typeof this.options.createRow).toLowerCase() == "function") {
             result = this.options.createRow.apply(this, arguments);
         }
         else {
-            result = $("<tr class=\"" + this.options.classes.row + "\" data-row=\"" + rowIndex + "\"></tr>");
+            result = $(`<tr class="${this.options.classes.row}" data-row="${rowIndex}"></tr>`);
         }
         return result;
-    };
+    }
     /**
      * Create a cell for the board
      * By default is a td
@@ -852,16 +831,16 @@ var CrosswordGame = /** @class */ (function () {
      * @returns {JQuery}
      * @private
      */
-    CrosswordGame.prototype._createCell = function (definition) {
-        var result;
+    _createCell(definition) {
+        let result;
         if ((typeof this.options.createCell).toLowerCase() == "function") {
             result = this.options.createCell.apply(this, arguments);
         }
         else {
-            result = $("<td></td>");
+            result = $(`<td></td>`);
         }
         return result;
-    };
+    }
     /**
      * Create a cell field for the board
      * By default is a input
@@ -870,16 +849,16 @@ var CrosswordGame = /** @class */ (function () {
      * @returns {JQuery}
      * @private
      */
-    CrosswordGame.prototype._createCellField = function (definition) {
-        var result;
+    _createCellField(definition) {
+        let result;
         if ((typeof this.options.createCellField).toLowerCase() == "function") {
             result = this.options.createCellField.apply(this, arguments);
         }
         else {
-            result = $("<input maxlength=\"1\" tabindex=\"-1\">");
+            result = $(`<input maxlength="1" tabindex="-1">`);
         }
         return result;
-    };
+    }
     /**
      * Create the container of a list of clues.
      * If the option "createCluesListContainer" is provided, will be used instead
@@ -887,18 +866,22 @@ var CrosswordGame = /** @class */ (function () {
      * @returns {JQuery}
      * @private
      */
-    CrosswordGame.prototype._createCluesListContainer = function (across) {
-        var result;
+    _createCluesListContainer(across) {
+        let result;
         if ((typeof this.options.createCluesListContainer).toLowerCase() == "function") {
             result = this.options.createCluesListContainer.apply(this, arguments);
         }
         else {
-            result = $("\n                <div class=\"" + this.options.classes.cluesListContainer + "\">\n                    <p class=\"" + this.options.classes.cluesListTitle + "\">" + (across
+            result = $(`
+                <div class="${this.options.classes.cluesListContainer}">
+                    <p class="${this.options.classes.cluesListTitle}">${across
                 ? this.options.acrossListTitle
-                : this.options.downListTitle) + "</p>\n                </div>\n            ");
+                : this.options.downListTitle}</p>
+                </div>
+            `);
         }
         return result;
-    };
+    }
     /**
      * Create a list of clues
      * If the option "createCluesList" is provided, will be used instead
@@ -906,16 +889,16 @@ var CrosswordGame = /** @class */ (function () {
      * @returns {JQuery}
      * @private
      */
-    CrosswordGame.prototype._createCluesList = function (across) {
-        var result;
+    _createCluesList(across) {
+        let result;
         if ((typeof this.options.createCluesList).toLowerCase() == "function") {
             result = this.options.createCluesList.apply(this, arguments);
         }
         else {
-            result = $("<ul class=\"" + this.options.classes.clueList + "\"></ul>");
+            result = $(`<ul class="${this.options.classes.clueList}"></ul>`);
         }
         return result;
-    };
+    }
     /**
      * Create a clue list item.
      * If the option "createCluesListContainer" is provided, will be used instead
@@ -923,27 +906,26 @@ var CrosswordGame = /** @class */ (function () {
      * @returns {JQuery}
      * @private
      */
-    CrosswordGame.prototype._createCluesListItem = function (definition) {
-        var result;
+    _createCluesListItem(definition) {
+        let result;
         if ((typeof this.options.createCluesListItem).toLowerCase() == "function") {
             result = this.options.createCluesListItem.apply(this, arguments);
         }
         else {
-            result = $("<li></li>");
+            result = $(`<li></li>`);
         }
         return result;
-    };
+    }
     /**
      * Create the down clues list.
      * @private
      */
-    CrosswordGame.prototype._createDownCluesList = function () {
-        var down = this.definition.downClues;
+    _createDownCluesList() {
+        let down = this.definition.downClues;
         this.downCluesContainer = this._createCluesListContainer(false);
         this.downCluesList = this._createCluesList(false);
-        for (var _i = 0, down_1 = down; _i < down_1.length; _i++) {
-            var clue = down_1[_i];
-            var $clue = this._createCluesListItem(clue);
+        for (let clue of down) {
+            const $clue = this._createCluesListItem(clue);
             this._addInfoToListElement($clue, clue);
             this.downCluesList.append($clue);
             this.cluesRegistry[clue.code].listItem = $clue;
@@ -951,19 +933,18 @@ var CrosswordGame = /** @class */ (function () {
         if (this.downCluesContainer) {
             this.downCluesContainer.append(this.downCluesList);
         }
-    };
+    }
     /**
      * Create the across clues list
      * @private
      */
-    CrosswordGame.prototype._createAcrossCluesList = function () {
-        var across = this.definition.acrossClues;
+    _createAcrossCluesList() {
+        let across = this.definition.acrossClues;
         //Across
         this.acrossCluesContainer = this._createCluesListContainer(true);
         this.acrossCluesList = this._createCluesList(true);
-        for (var _i = 0, across_1 = across; _i < across_1.length; _i++) {
-            var clue = across_1[_i];
-            var $clue = this._createCluesListItem(clue);
+        for (let clue of across) {
+            const $clue = this._createCluesListItem(clue);
             this._addInfoToListElement($clue, clue);
             this.acrossCluesList.append($clue);
             this.cluesRegistry[clue.code].listItem = $clue;
@@ -971,12 +952,12 @@ var CrosswordGame = /** @class */ (function () {
         if (this.acrossCluesContainer) {
             this.acrossCluesContainer.append(this.acrossCluesList);
         }
-    };
+    }
     /**
      * Create the clues lists
      * @private
      */
-    CrosswordGame.prototype._createCluesLists = function () {
+    _createCluesLists() {
         this._createAcrossCluesList();
         this._createDownCluesList();
         //Append across
@@ -1013,14 +994,14 @@ var CrosswordGame = /** @class */ (function () {
             //otherwise append to the root element
             this.element.append(this.downCluesContainer);
         }
-    };
+    }
     /**
      * Add info to the list element like classes and attributes
      * @param {JQuery} list
      * @param {CrosswordCell} clueDefinition
      * @private
      */
-    CrosswordGame.prototype._addInfoToListElement = function (listItem, clueDefinition) {
+    _addInfoToListElement(listItem, clueDefinition) {
         listItem.addClass(this.options.classes.listItem);
         //data for across
         if (clueDefinition.across) {
@@ -1032,14 +1013,14 @@ var CrosswordGame = /** @class */ (function () {
             listItem.attr("data-down", clueDefinition.code);
         }
         listItem.text(clueDefinition.clue);
-    };
+    }
     /**
      * Add info to the cell element like classes and attributes
      * @param {JQuery} cell
      * @param {CrosswordCell} cellDefinition
      * @private
      */
-    CrosswordGame.prototype._addInfoToCellElement = function (cell, cellDefinition) {
+    _addInfoToCellElement(cell, cellDefinition) {
         //coordinates
         cell.attr({
             "data-x": cellDefinition.x,
@@ -1076,44 +1057,44 @@ var CrosswordGame = /** @class */ (function () {
                 cell.addClass(this.options.classes.hint);
             }
         }
-    };
+    }
     /**
      * Create the registry of the clue
      * @returns {{[key: number]: CrosswordClueRegistry}}
      * @private
      */
-    CrosswordGame.prototype._createClueRegistry = function () {
-        var crosswordClueRegistry = {}, definition = this.definition, clues = definition.acrossClues.concat(definition.downClues);
-        for (var clueIndex = 0, cluesLength = clues.length; clueIndex < cluesLength; clueIndex++) {
-            var currentClue = clues[clueIndex], registry = new CrosswordClueRegistry();
+    _createClueRegistry() {
+        let crosswordClueRegistry = {}, definition = this.definition, clues = definition.acrossClues.concat(definition.downClues);
+        for (let clueIndex = 0, cluesLength = clues.length; clueIndex < cluesLength; clueIndex++) {
+            let currentClue = clues[clueIndex], registry = new CrosswordClueRegistry();
             registry.definition = currentClue;
             registry.currentAnswer = new Array(currentClue.answer.length);
             crosswordClueRegistry[currentClue.code] = registry;
         }
         return crosswordClueRegistry;
-    };
+    }
     /**
      * Initialize the component
      * @private
      */
-    CrosswordGame.prototype._construct = function () {
+    _construct() {
         if (this.definition) {
-            var definition = this.definition, matrix = definition.matrix, board = this._createBoard(), rowsRegistry = [], crosswordClueRegistry = this.cluesRegistry;
+            let definition = this.definition, matrix = definition.matrix, board = this._createBoard(), rowsRegistry = [], crosswordClueRegistry = this.cluesRegistry;
             this.board = board;
             //for each row of the matrix
-            for (var rowIndex = 0, matrixLength = matrix.length; rowIndex < matrixLength; rowIndex++) {
-                var definitions = matrix[rowIndex], rowElement = void 0, 
+            for (let rowIndex = 0, matrixLength = matrix.length; rowIndex < matrixLength; rowIndex++) {
+                let definitions = matrix[rowIndex], rowElement, 
                 //cells to create
                 cells = [], cellsRegistry = [], rowRegistry = new CrosswordRowRegistry();
                 rowRegistry.cellsRegistry = cellsRegistry;
                 //for each cell
-                for (var columnIndex = 0, columnsLength = definitions.length; columnIndex < columnsLength; columnIndex++) {
+                for (let columnIndex = 0, columnsLength = definitions.length; columnIndex < columnsLength; columnIndex++) {
                     //get the definition and create the base element
-                    var cellDefinition = definitions[columnIndex], 
+                    let cellDefinition = definitions[columnIndex], 
                     //create the cell element
                     cellElement = this._createCell(cellDefinition).addClass(this.options.classes.cell), 
                     //create the registry
-                    cellRegistry = new CrosswordCellRegistry(), fieldElement = void 0;
+                    cellRegistry = new CrosswordCellRegistry(), fieldElement;
                     cellRegistry.rowRegistry = rowRegistry;
                     //add the info to the dom
                     this._addInfoToCellElement(cellElement, cellDefinition);
@@ -1132,14 +1113,14 @@ var CrosswordGame = /** @class */ (function () {
                             cellElement.append(fieldElement);
                             //add to the registry
                             if (cellDefinition.acrossClue) {
-                                var registry = crosswordClueRegistry[cellDefinition.acrossClue.code];
+                                let registry = crosswordClueRegistry[cellDefinition.acrossClue.code];
                                 registry.cellsElements.push(cellElement);
                                 registry.fieldsElements.push(fieldElement);
                                 registry.cellsRegistries.push(cellRegistry);
                                 cellRegistry.acrossClueRegistry = registry;
                             }
                             if (cellDefinition.downClue) {
-                                var registry = crosswordClueRegistry[cellDefinition.downClue.code];
+                                let registry = crosswordClueRegistry[cellDefinition.downClue.code];
                                 registry.cellsElements.push(cellElement);
                                 registry.fieldsElements.push(fieldElement);
                                 registry.cellsRegistries.push(cellRegistry);
@@ -1150,11 +1131,11 @@ var CrosswordGame = /** @class */ (function () {
                             cellElement.text(cellDefinition.answer);
                             //store the response of the letter
                             if (cellDefinition.acrossClue) {
-                                var registry = crosswordClueRegistry[cellDefinition.acrossClue.code];
+                                let registry = crosswordClueRegistry[cellDefinition.acrossClue.code];
                                 registry.currentAnswer[cellDefinition.acrossClueLetterIndex] = cellDefinition.answer;
                             }
                             if (cellDefinition.downClue) {
-                                var registry = crosswordClueRegistry[cellDefinition.downClue.code];
+                                let registry = crosswordClueRegistry[cellDefinition.downClue.code];
                                 registry.currentAnswer[cellDefinition.downClueLetterIndex] = cellDefinition.answer;
                             }
                         }
@@ -1177,22 +1158,21 @@ var CrosswordGame = /** @class */ (function () {
             this.rowsRegistry = rowsRegistry;
             this.element.append(board);
         }
-    };
+    }
     /**
      * Instantiate the definition
      * @private
      */
-    CrosswordGame.prototype._createDefinition = function () {
-        var definition = this.options.definition;
+    _createDefinition() {
+        let definition = this.options.definition;
         if (definition) {
-            if (definition instanceof crosswordDefinition.CrosswordDefinition !== true) {
-                definition = new crosswordDefinition.CrosswordDefinition(definition);
+            if (definition instanceof CrosswordDefinition !== true) {
+                definition = new CrosswordDefinition(definition);
             }
             this.definition = definition;
         }
-    };
-    return CrosswordGame;
-}());
+    }
+}
 
 /**
  * @module jqCrossword
@@ -1202,9 +1182,9 @@ var CrosswordGame = /** @class */ (function () {
 //the properties of a es6 class prototype aren't enumerable so it's necessary to get the propertyNames and get the descriptor of each one
 if (Object.hasOwnProperty("getOwnPropertyDescriptors")) {
     //@ts-ignore
-    var proto = {}, names = Object.getOwnPropertyNames(CrosswordGame.prototype);
-    for (var nameIndex = 0, namesLength = names.length; nameIndex < namesLength; nameIndex++) {
-        var currentName = names[nameIndex];
+    let proto = {}, names = Object.getOwnPropertyNames(CrosswordGame.prototype);
+    for (let nameIndex = 0, namesLength = names.length; nameIndex < namesLength; nameIndex++) {
+        let currentName = names[nameIndex];
         proto[currentName] = Object.getOwnPropertyDescriptor(CrosswordGame.prototype, currentName).value;
     }
     $.widget("ui.snapPuzzle", proto);
@@ -1224,11 +1204,4 @@ else {
  * ```
  */ /** */
 
-exports.CrosswordCellRegistry = CrosswordCellRegistry;
-exports.CrosswordClueRegistry = CrosswordClueRegistry;
-exports.CrosswordRowRegistry = CrosswordRowRegistry;
-exports.CrosswordGame = CrosswordGame;
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-})));
+export { CrosswordFeedback, CrosswordEvents, CrosswordCellRegistry, CrosswordClueRegistry, CrosswordRowRegistry, CrosswordGame };
