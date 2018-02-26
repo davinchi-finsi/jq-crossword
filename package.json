@@ -1,6 +1,6 @@
 {
   "name": "jq-crossword",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A jquery plugin to create corssword games",
   "main": "dist/jquery.crossword.js",
   "jsnext:main": "esm2015/jquery.crossword.js.js",

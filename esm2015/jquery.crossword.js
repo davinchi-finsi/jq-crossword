@@ -1,5 +1,5 @@
 /**
- * @license jq-crossword v1.0.0
+ * @license jq-crossword v1.0.1
  * (c) 2018 Finsi, Inc.
  */
 
