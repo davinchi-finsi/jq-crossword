@@ -260,3 +260,7 @@ Available methods to invoke:
 
 For more info, please go to [docs](https://davinchi-finsi.github.io/jq-crossword/classes/jqcrossword.crosswordgame.html)
 **Please note** that only public methods are available using `$("selector").crossword("methodName","methodParams");`
+
+
+## Known issues
+- When two words starts in the same position, the navigation by tab fails
