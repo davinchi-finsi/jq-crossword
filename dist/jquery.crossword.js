@@ -1,5 +1,5 @@
 /**
- * @license jq-crossword v1.0.1
+ * @license jq-crossword v1.0.2
  * (c) 2018 Finsi, Inc.
  */
 
@@ -1207,10 +1207,10 @@ if (Object.hasOwnProperty("getOwnPropertyDescriptors")) {
         var currentName = names[nameIndex];
         proto[currentName] = Object.getOwnPropertyDescriptor(CrosswordGame.prototype, currentName).value;
     }
-    $.widget("ui.snapPuzzle", proto);
+    $.widget("ui.crossword", proto);
 }
 else {
-    $.widget("ui.snapPuzzle", CrosswordGame);
+    $.widget("ui.crossword", CrosswordGame);
 }
 
 /**
