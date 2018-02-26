@@ -111,7 +111,7 @@ import * as $ from "jquery";
 import "jquery-ui/ui/widget";
 //for jquery-ui-dist package
 import "jquery-ui-dist/jquery-ui";
-import {CrosswordGame} from "jq-crossword";
+import "jq-crossword";
 $("someSelector").crossword({
     //options
 });
