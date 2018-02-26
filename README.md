@@ -20,7 +20,7 @@ or download the [latest release](https://github.com/davinchi-finsi/jq-crossword/
 For more info, please check the [docs](https://davinchi-finsi.github.io/jq-crossword/)
 
 ## Demo and Playground
-Please go to our [demo in jsfiddle](https://jsfiddle.net/Haztivity/aykjnv6q/1/?utm_source=website&utm_medium=embed&utm_campaign=aykjnv6q)
+Please go to our [demo in jsfiddle](https://jsfiddle.net/Haztivity/aykjnv6q/)
 
 ## Usage
 `npm i jq-crossword`
