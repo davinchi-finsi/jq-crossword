@@ -1,7 +1,7 @@
 # Change Log
 
 <a name="1.0.0"></a>
-## [1.0.1](https://github.com/davinchi-finsi/jq-crossword/compare/jq-crossword@1.0.0...jq-crossword@1.0.1) (2018-02-26)
+## [1.0.1](https://github.com/davinchi-finsi/jq-crossword/compare/v1.0.0...v1.0.1) (2018-02-26)
 ### Features
 * **chore:** Implemented gulp
 * **chore:** Implemented sass compilation
