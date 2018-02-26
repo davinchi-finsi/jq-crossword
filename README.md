@@ -105,7 +105,7 @@ $("someSelector").crossword(<CrosswordOptions>{
 ```
 Vanilla ES2015
 ```javascript
-import "jq-snap-puzzle";
+import * as $ from "jquery";
 //choose one of the follow options
 //for jquery-ui package
 import "jquery-ui/ui/widget";
@@ -126,6 +126,8 @@ $("someSelector").crossword({
         <title>Some Title</title>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="path/to/crossword-definition"></script>
+        <script type="text/javascript" src="path/to/jquery.crossword"></script>
     </head>
     <body>
         <div class="crossword">
@@ -144,7 +146,7 @@ of force you to use one, we leave up to you how to include it:
 ### Modularized
 Using `npm i jquery-ui` that install the package allowing to import the widgets you want.
 
-We provided a file with the import of the required dependencies:
+`jquery.crossword` only requires the `widget`:
 ```typescript
 import "jquery-ui/ui/widget";
 ```
