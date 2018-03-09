@@ -40,50 +40,58 @@
     $tc-list-item--correct:$bg-clue--correct,
     $bg-list-item--correct:transparent
 ){
-    .c-crossword__cell{
-        border-color:$br-cell;
-    }
-    .c-crossword__clue {
-        color:$tc-clue;
-        border-color:$br-clue;
-        background-color: $bg-clue;
-        &.c-crossword__clue--active,
-        &.c-crossword__clue--active .c-crossword__clue__field{
-            color:$tc-clue--active;
-            border-color:$br-clue--active;
-            background-color: $bg-clue--active;
+    .c-crossword {
+        .c-crossword__cell {
+            border-color: $br-cell;
+        }
+        .c-crossword__clue {
+            color: $tc-clue;
+            border-color: $br-clue;
+            background-color: $bg-clue;
+            &.c-crossword__clue--active,
+            &.c-crossword__clue--active .c-crossword__clue__field {
+                color: $tc-clue--active;
+                border-color: $br-clue--active;
+                background-color: $bg-clue--active;
+            }
+        }
+        .c-crossword__clue--incorrect {
+            .c-crossword__clue__field {
+                color: $tc-clue--incorrect;
+                border-color: $br-clue--incorrect;
+                background-color: $bg-clue--incorrect;
+            }
+        }
+        .c-crossword__clue--correct {
+            .c-crossword__clue__field {
+                color: $tc-clue--correct;
+                border-color: $br-clue--correct;
+                background-color: $bg-clue--correct;
+            }
         }
     }
-    .c-crossword__list-item {
-        color:$tc-list-item;
-        background-color:$bg-list-item;
-        &.c-crossword__clue--active{
-            font-weight: bold;
-            color:$tc-list-item--active;
-            background-color:$bg-list-item--active;
+    .c-crossword__clues__list{
+        .c-crossword__list-item {
+            color: $tc-list-item;
+            background-color: $bg-list-item;
+            &.c-crossword__clue--active {
+                font-weight: bold;
+                color: $tc-list-item--active;
+                background-color: $bg-list-item--active;
+            }
         }
-    }
-    .c-crossword__clue--incorrect{
-        .c-crossword__clue__field{
-            color: $tc-clue--incorrect;
-            border-color: $br-clue--incorrect;
-            background-color: $bg-clue--incorrect;
+        .c-crossword__clue--incorrect {
+            &.c-crossword__list-item {
+                color: $tc-list-item--incorrect;
+                background-color: $bg-list-item--incorrect;
+            }
         }
-        &.c-crossword__list-item{
-            color: $tc-list-item--incorrect;
-            background-color: $bg-list-item--incorrect;
-        }
-    }
-    .c-crossword__clue--correct{
-        .c-crossword__clue__field{
-            color: $tc-clue--correct;
-            border-color: $br-clue--correct;
-            background-color: $bg-clue--correct;
-        }
-        &.c-crossword__list-item{
-            text-decoration: line-through;
-            color: $tc-list-item--correct;
-            background-color: $bg-list-item--correct;
+        .c-crossword__clue--correct {
+            &.c-crossword__list-item {
+                text-decoration: line-through;
+                color: $tc-list-item--correct;
+                background-color: $bg-list-item--correct;
+            }
         }
     }
 }

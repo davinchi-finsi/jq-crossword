@@ -1,17 +1,15 @@
 @import "./crossword.theme";
-.c-crossword {
-    @include crossword-theme(
-        //Cells with light:true
+@include crossword-theme(
+    //Cells with light:true
         $tc-clue:#000,
-        //Cell clue with focus
+            //Cell clue with focus
         $bg-clue--active:#666,
-        //Clue incorrect
+            //Clue incorrect
         $tc-clue--incorrect:#fff,
         $bg-clue--incorrect:#D32F2F,
-        //Clue correct
+            //Clue correct
         $tc-clue--correct:#fff,
         $bg-clue--correct:#2E7D32,
-        //Cells with light:true
+            //Cells with light:true
         $br-clue:#999
-    )
-}
+)  
