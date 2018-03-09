@@ -1,5 +1,5 @@
 /**
- * @license jq-crossword v1.2.0
+ * @license jq-crossword v1.2.1
  * (c) 2018 Finsi, Inc.
  */
 
@@ -133,7 +133,7 @@ var CrosswordGame = /** @class */ (function () {
      * Destroy the component
      */
     CrosswordGame.prototype.destroy = function () {
-        this.element.removeClass([this.options.classes.disabled, this.options.classes.root]);
+        this.element.removeClass(this.options.classes.disabled + " " + this.options.classes.root);
         this.element.off("." + this.options.namespace);
         this.board.remove();
         this.acrossCluesContainer.remove();
@@ -520,13 +520,10 @@ var CrosswordGame = /** @class */ (function () {
             for (var _i = 0, cellsRegistries_2 = cellsRegistries; _i < cellsRegistries_2.length; _i++) {
                 var cellRegistry = cellsRegistries_2[_i];
                 if (!cellRegistry.acrossClueRegistry || !cellRegistry.downClueRegistry || (!cellRegistry.acrossClueRegistry.isCompleted && !cellRegistry.downClueRegistry.isCompleted)) {
-                    cellRegistry.element.removeClass([
-                        this.options.classes.clueCorrect,
-                        this.options.classes.clueIncorrect
-                    ]);
+                    cellRegistry.element.removeClass(this.options.classes.clueCorrect + " " + this.options.classes.clueIncorrect);
                 }
             }
-            clueRegistry.listItem.removeClass([this.options.classes.clueCorrect, this.options.classes.clueIncorrect]);
+            clueRegistry.listItem.removeClass(this.options.classes.clueCorrect + " " + this.options.classes.clueIncorrect);
         }
     };
     /**

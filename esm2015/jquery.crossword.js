@@ -1,5 +1,5 @@
 /**
- * @license jq-crossword v1.2.0
+ * @license jq-crossword v1.2.1
  * (c) 2018 Finsi, Inc.
  */
 
@@ -116,7 +116,7 @@ class CrosswordGame {
      * Destroy the component
      */
     destroy() {
-        this.element.removeClass([this.options.classes.disabled, this.options.classes.root]);
+        this.element.removeClass(this.options.classes.disabled + " " + this.options.classes.root);
         this.element.off("." + this.options.namespace);
         this.board.remove();
         this.acrossCluesContainer.remove();
@@ -500,13 +500,10 @@ class CrosswordGame {
             const cellsRegistries = clueRegistry.cellsRegistries;
             for (let cellRegistry of cellsRegistries) {
                 if (!cellRegistry.acrossClueRegistry || !cellRegistry.downClueRegistry || (!cellRegistry.acrossClueRegistry.isCompleted && !cellRegistry.downClueRegistry.isCompleted)) {
-                    cellRegistry.element.removeClass([
-                        this.options.classes.clueCorrect,
-                        this.options.classes.clueIncorrect
-                    ]);
+                    cellRegistry.element.removeClass(this.options.classes.clueCorrect + " " + this.options.classes.clueIncorrect);
                 }
             }
-            clueRegistry.listItem.removeClass([this.options.classes.clueCorrect, this.options.classes.clueIncorrect]);
+            clueRegistry.listItem.removeClass(this.options.classes.clueCorrect + " " + this.options.classes.clueIncorrect);
         }
     }
     /**

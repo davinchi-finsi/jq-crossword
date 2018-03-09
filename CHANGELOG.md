@@ -1,4 +1,8 @@
 # Change Log
+## [1.2.1](https://github.com/davinchi-finsi/jq-crossword/compare/v1.2.0...v1.2.1) (2018-03-09)
+### Bug Fixes
+* Changed removeClass invocation for compatibility
+
 ## [1.2.0](https://github.com/davinchi-finsi/jq-crossword/compare/v1.1.0...v1.2.0) (2018-03-09)
 ### Features
 * Added jquery-ui-deps to vcs
