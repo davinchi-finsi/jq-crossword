@@ -3,7 +3,7 @@
   "version": "1.0.2",
   "description": "A jquery plugin to create corssword games",
   "main": "dist/jquery.crossword.js",
-  "jsnext:main": "esm2015/jquery.crossword.js.js",
+  "jsnext:main": "esm2015/jquery.crossword.js",
   "ts:main": "src/index.ts",
   "types": "src/index.ts",
   "typings": "src/index.ts",

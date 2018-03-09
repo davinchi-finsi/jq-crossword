@@ -1,6 +1,4 @@
 # Created by .ignore support plugin (hsz.mobi)
-src/*.js
-src/*.js.map
 build/
 docs/
 node_modules/
