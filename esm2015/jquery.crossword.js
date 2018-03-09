@@ -1,5 +1,5 @@
 /**
- * @license jq-crossword v1.1.0
+ * @license jq-crossword v1.2.0
  * (c) 2018 Finsi, Inc.
  */
 
@@ -1183,7 +1183,6 @@ class CrosswordGame {
 /**
  * @module jqCrossword
  */ /** */
-//Create the ui widget
 //$.widget extends the prototype that receives, to extend the prototype all the properties must be enumerable
 //the properties of a es6 class prototype aren't enumerable so it's necessary to get the propertyNames and get the descriptor of each one
 if (Object.hasOwnProperty("getOwnPropertyDescriptors")) {
