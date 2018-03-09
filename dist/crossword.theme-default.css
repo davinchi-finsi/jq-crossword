@@ -15,26 +15,10 @@
   background-color: #666;
 }
 
-.c-crossword .c-crossword__list-item {
-  color: #000;
-  background-color: transparent;
-}
-
-.c-crossword .c-crossword__list-item.c-crossword__clue--active {
-  font-weight: bold;
-  color: #000;
-  background-color: transparent;
-}
-
 .c-crossword .c-crossword__clue--incorrect .c-crossword__clue__field {
   color: #fff;
   border-color: #999;
   background-color: #D32F2F;
-}
-
-.c-crossword .c-crossword__clue--incorrect.c-crossword__list-item {
-  color: #D32F2F;
-  background-color: transparent;
 }
 
 .c-crossword .c-crossword__clue--correct .c-crossword__clue__field {
@@ -43,7 +27,23 @@
   background-color: #2E7D32;
 }
 
-.c-crossword .c-crossword__clue--correct.c-crossword__list-item {
+.c-crossword__clues__list .c-crossword__list-item {
+  color: #000;
+  background-color: transparent;
+}
+
+.c-crossword__clues__list .c-crossword__list-item.c-crossword__clue--active {
+  font-weight: bold;
+  color: #000;
+  background-color: transparent;
+}
+
+.c-crossword__clues__list .c-crossword__clue--incorrect.c-crossword__list-item {
+  color: #D32F2F;
+  background-color: transparent;
+}
+
+.c-crossword__clues__list .c-crossword__clue--correct.c-crossword__list-item {
   text-decoration: line-through;
   color: #2E7D32;
   background-color: transparent;

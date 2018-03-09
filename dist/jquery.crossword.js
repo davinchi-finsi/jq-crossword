@@ -1,5 +1,5 @@
 /**
- * @license jq-crossword v1.0.2
+ * @license jq-crossword v1.1.0
  * (c) 2018 Finsi, Inc.
  */
 
@@ -239,6 +239,8 @@ var CrosswordGame = /** @class */ (function () {
         if (this.registryActive) {
             this.registryActive = null;
             this.element.find("." + this.options.classes.clueActive).removeClass(this.options.classes.clueActive);
+            this.acrossCluesList.find("." + this.options.classes.clueActive).removeClass(this.options.classes.clueActive);
+            this.downCluesList.find("." + this.options.classes.clueActive).removeClass(this.options.classes.clueActive);
             this.registryCellActive.element.removeClass(this.options.classes.cellActive);
             this.registryCellActive = null;
         }
@@ -480,7 +482,7 @@ var CrosswordGame = /** @class */ (function () {
         this.cluesRegistry = this._createClueRegistry();
         this._construct();
         this._createCluesLists();
-        this._addEvents();
+        this._addEventsListeners();
         //use or create model
         //create markup from model
         //assign events
@@ -489,12 +491,13 @@ var CrosswordGame = /** @class */ (function () {
      * Register the events
      * @private
      */
-    CrosswordGame.prototype._addEvents = function () {
+    CrosswordGame.prototype._addEventsListeners = function () {
         this.element.on("focus." + this.options.namespace, "." + this.options.classes.field, this._onFieldFocus.bind(this));
         this.element.on("blur." + this.options.namespace, "." + this.options.classes.field, this._onFieldBlur.bind(this));
         this.element.on("input." + this.options.namespace, "." + this.options.classes.field, this._onFieldChange.bind(this));
         this.element.on("keydown." + this.options.namespace, "." + this.options.classes.field, this._onFieldKey.bind(this));
-        this.element.on("click." + this.options.namespace, "." + this.options.classes.listItem, this._onListItemClick.bind(this));
+        this.acrossCluesList.on("click." + this.options.namespace, "." + this.options.classes.listItem, this._onListItemClick.bind(this));
+        this.downCluesList.on("click." + this.options.namespace, "." + this.options.classes.listItem, this._onListItemClick.bind(this));
     };
     /**
      * Update the css classes for the clueRegistry depending if is correct or incorrect
@@ -538,10 +541,10 @@ var CrosswordGame = /** @class */ (function () {
             this.interaction = true;
             var $target = $(e.target), downCode = $target.data("down"), acrossCode = $target.data("across"), registry = void 0;
             if (downCode) {
-                registry = this.cluesRegistry[downCode].cellsRegistries[0];
+                registry = this.cluesRegistry[downCode + "d"].cellsRegistries[0];
             }
             else {
-                registry = this.cluesRegistry[acrossCode].cellsRegistries[0];
+                registry = this.cluesRegistry[acrossCode + "a"].cellsRegistries[0];
             }
             this.goToCell(registry);
             this.interaction = false;
@@ -682,7 +685,9 @@ var CrosswordGame = /** @class */ (function () {
         var registry = this.cluesRegistry[clue.code];
         if (registry && registry != this.registryActive) {
             this.registryActive = registry;
-            this.element.find("." + this.options.classes.clueActive).removeClass(this.options.classes.clueActive);
+            this.board.find("." + this.options.classes.clueActive).removeClass(this.options.classes.clueActive);
+            this.acrossCluesList.find("." + this.options.classes.clueActive).removeClass(this.options.classes.clueActive);
+            this.downCluesList.find("." + this.options.classes.clueActive).removeClass(this.options.classes.clueActive);
             registry.cellsAsJquery.addClass(this.options.classes.clueActive);
             registry.listItem.addClass(this.options.classes.clueActive);
         }
@@ -981,15 +986,16 @@ var CrosswordGame = /** @class */ (function () {
         this._createDownCluesList();
         //Append across
         //if appendTo option is provided
-        if (this.options.acrossListAppendTo) {
+        var acrossListTargetElement = this.options.acrossListAppendTo ? $(this.options.acrossListAppendTo) : null, downListAppendTargetElement = this.options.downListAppendTo ? $(this.options.downListAppendTo) : null;
+        if (acrossListTargetElement && acrossListTargetElement.length > 0) {
             //if the container exists (is optional)
             if (this.acrossCluesContainer) {
                 //append the container
-                $(this.options.acrossListAppendTo).append(this.acrossCluesContainer);
+                acrossListTargetElement.append(this.acrossCluesContainer);
             }
             else {
                 //otherwise append the list
-                $(this.options.acrossListAppendTo).append(this.acrossCluesList);
+                acrossListTargetElement.append(this.acrossCluesList);
             }
         }
         else {
@@ -998,15 +1004,15 @@ var CrosswordGame = /** @class */ (function () {
         }
         //Append down
         //if appendTo option is provided
-        if (this.options.downListAppendTo) {
+        if (downListAppendTargetElement && downListAppendTargetElement.length > 0) {
             //if the container exists (is optional)
             if (this.downCluesContainer) {
                 //append the container
-                $(this.options.downListAppendTo).append(this.downCluesContainer);
+                downListAppendTargetElement.append(this.downCluesContainer);
             }
             else {
                 //otherwise append the list
-                $(this.options.downListAppendTo).append(this.downCluesList);
+                downListAppendTargetElement.append(this.downCluesList);
             }
         }
         else {
@@ -1025,11 +1031,11 @@ var CrosswordGame = /** @class */ (function () {
         //data for across
         if (clueDefinition.across) {
             listItem.addClass(this.options.classes.clue + "--" + clueDefinition.code);
-            listItem.attr("data-across", clueDefinition.code);
+            listItem.attr("data-across", clueDefinition.number);
         }
         else {
             listItem.addClass(this.options.classes.clue + "--" + clueDefinition.code);
-            listItem.attr("data-down", clueDefinition.code);
+            listItem.attr("data-down", clueDefinition.number);
         }
         listItem.text(clueDefinition.clue);
     };
