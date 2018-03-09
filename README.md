@@ -3,7 +3,9 @@ Extensible crossword game made with JQuery widget
 
 ## Dependencies
 - jquery
-- jquery ui (only widget)
+- jquery ui
+    - widget
+    - keycode
 - crossword-definition
 
 
@@ -146,9 +148,9 @@ of force you to use one, we leave up to you how to include it:
 ### Modularized
 Using `npm i jquery-ui` that install the package allowing to import the widgets you want.
 
-`jquery.crossword` only requires the `widget`:
+We provided a file with the imports of the required dependencies:
 ```typescript
-import "jquery-ui/ui/widget";
+import "jq-snap-puzzle/esm2015/jquery-ui-deps";
 ```
 
 ### dist package
@@ -158,7 +160,8 @@ In npm is available the package [jquery-ui-dist](https://www.npmjs.com/package/j
 Go to the [jquery ui download page](https://jqueryui.com/download) and checks:
 - core
     - widget
-or use [this configuration](http://jqueryui.com/download/#!version=1.12.1&components=100000000000000000000000000000000000000000000000)
+    - keycode
+or use [this configuration](http://jqueryui.com/download/#!version=1.12.1&components=100000010000000000000000000000000000000000000000http://jqueryui.com/download/#!version=1.12.1&components=100000000000000000000000000000000000000000000000)
 
 ### Options
 Please go to [CrosswordOptions](https://davinchi-finsi.github.io/jq-crossword/interfaces/jqcrossword.crosswordoptions.html)
