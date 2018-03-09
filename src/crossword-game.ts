@@ -975,14 +975,16 @@ export class CrosswordGame {
         this._createDownCluesList();
         //Append across
         //if appendTo option is provided
-        if (this.options.acrossListAppendTo) {
+        const acrossListTargetElement = this.options.acrossListAppendTo ? $(this.options.acrossListAppendTo) : null,
+            downListAppendTargetElement = this.options.downListAppendTo ? $(this.options.downListAppendTo) : null;
+        if (acrossListTargetElement && acrossListTargetElement.length > 0) {
             //if the container exists (is optional)
             if (this.acrossCluesContainer) {
                 //append the container
-                $(this.options.acrossListAppendTo).append(this.acrossCluesContainer);
+                acrossListTargetElement.append(this.acrossCluesContainer);
             } else {
                 //otherwise append the list
-                $(this.options.acrossListAppendTo).append(this.acrossCluesList);
+                acrossListTargetElement.append(this.acrossCluesList);
             }
         } else {
             //otherwise append to the root element
@@ -990,14 +992,14 @@ export class CrosswordGame {
         }
         //Append down
         //if appendTo option is provided
-        if (this.options.downListAppendTo) {
+        if (downListAppendTargetElement && downListAppendTargetElement.length > 0) {
             //if the container exists (is optional)
             if (this.downCluesContainer) {
                 //append the container
-                $(this.options.downListAppendTo).append(this.downCluesContainer);
+                downListAppendTargetElement.append(this.downCluesContainer);
             } else {
                 //otherwise append the list
-                $(this.options.downListAppendTo).append(this.downCluesList);
+                downListAppendTargetElement.append(this.downCluesList);
             }
         } else {
             //otherwise append to the root element
