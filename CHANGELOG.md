@@ -1,4 +1,9 @@
 # Change Log
+## [1.2.2](https://github.com/davinchi-finsi/jq-crossword/compare/v1.2.1...v1.2.2) (2018-03-09)
+### Bug Fixes
+* Widget creation for old browsers
+* Cell styles for IE11
+
 ## [1.2.1](https://github.com/davinchi-finsi/jq-crossword/compare/v1.2.0...v1.2.1) (2018-03-09)
 ### Bug Fixes
 * Changed removeClass invocation for compatibility

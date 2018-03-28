@@ -1,5 +1,5 @@
 /**
- * @license jq-crossword v1.2.1
+ * @license jq-crossword v1.2.2
  * (c) 2018 Finsi, Inc.
  */
 
@@ -1211,7 +1211,7 @@ if (Object.hasOwnProperty("getOwnPropertyDescriptors")) {
     $.widget("ui.crossword", proto);
 }
 else {
-    $.widget("ui.crossword", CrosswordGame);
+    $.widget("ui.crossword", CrosswordGame.prototype);
 }
 
 /**
