@@ -17,7 +17,7 @@ if(Object.hasOwnProperty("getOwnPropertyDescriptors")){
     }
     $.widget("ui.crossword", proto);
 }else {
-    $.widget("ui.crossword", CrosswordGame);
+    $.widget("ui.crossword", CrosswordGame.prototype);
 }
 declare interface JQuery {
 
